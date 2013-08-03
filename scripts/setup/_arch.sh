@@ -36,7 +36,7 @@ install_python_packages()
 
 install_python_packages_devel()
 {
-    pushd
+    pushd .
     cd -- "${VE}/bin"
 
     _install_python_packages "${REPO}/requirement-devel.txt"
