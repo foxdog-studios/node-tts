@@ -10,5 +10,18 @@ set +o nounset
 source env/bin/activate
 set -o nounset
 
-python src/tts.py "${@}"
+export PYTHONPATH="${PYTHONPATH-}:${REPO}/src"
+
+if [[ $# == 0 ]]; then
+    args=(
+        --bpm 90
+        --log-level debug
+        backing_tracks/default.wav
+        melodies/default.txt
+    )
+else
+    args=( "$@" )
+fi
+
+python -m tts "${args[@]}"
 

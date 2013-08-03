@@ -10,4 +10,6 @@ source scripts/setup/_arch.sh
 install_system_packages
 create_ve
 install_python_packages
+install_python_packages_devel
+render_midi_files
 
