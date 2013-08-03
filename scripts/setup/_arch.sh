@@ -53,7 +53,7 @@ render_midi_files()
 
     for midi in *.mid; do
         wav="${midi%.mid}"
-        "${REPO}/scripts/backing-track-render.sh" "${midi}" "${wav}.wav"
+        "${REPO}/scripts/midi-render.sh" "${midi}" "${wav}.wav"
     done
 
     ln -fs popcorn.wav default.wav
