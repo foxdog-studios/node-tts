@@ -10,7 +10,7 @@ usage()
 
     Usage:
 
-        # backing-track-render.sh INPUT_MIDI OUTPUT_WAV
+        # midi-render.sh INPUT_MIDI OUTPUT_WAV
     '
     exit 1
 }
