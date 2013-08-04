@@ -3,6 +3,7 @@
 from argparse import ArgumentParser
 from collections import OrderedDict
 import logging
+import pickle
 import queue
 import os
 import shutil
@@ -12,6 +13,7 @@ from tts.melody import parse_melody
 from tts.sms.worker import SmsHandler
 from tts.sms.server import SmsServer
 from tts.swift import Swift
+from tts.syllables import Syllables
 
 LOG_LEVELS = (
     logging.CRITICAL,
@@ -39,6 +41,7 @@ def build_argument_parser():
     parser.add_argument('-t', '--threshold', default=0.2, type=float,
                         help='volume at which a word sample starts')
     parser.add_argument('-w', '--words', help='acceptable words')
+    parser.add_argument('phonemes', help='phonemes for syllable splitting')
     parser.add_argument('backing_track', help='backing track to rap over')
     parser.add_argument('melody', help='melody to rap to')
     return parser
@@ -68,7 +71,12 @@ def main(argv=None):
         melody = melody_file.read()
     melody = parse_melody(melody)
 
+    with open(args.phonemes, 'rb') as infile:
+        phonemes = pickle.load(infile)
+    syllables = Syllables(phonemes)
+
     sms_handler = SmsHandler(
+        syllables,
         incoming_sms,
         swift,
         args.backing_track,

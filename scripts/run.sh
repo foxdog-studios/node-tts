@@ -15,7 +15,9 @@ export PYTHONPATH="${PYTHONPATH-}:${REPO}/src"
 if [[ $# == 0 ]]; then
     args=(
         --bpm 90
+        --host "$(hostname -i)"
         --log-level debug
+        phonemes.pkl
         backing_tracks/default.wav
         melodies/default.txt
     )

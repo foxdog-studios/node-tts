@@ -12,25 +12,36 @@ class Swift:
     def tts(self, ssml):
         subprocess.check_call((shutil.which('aoss'), self._swift_path, ssml))
 
-    def tts_file(self, ssml, output_path, volume=100):
+    def tts_file(self, ssml, output_path, volume=100, lexicon=None):
         bits_per_sample = 16
         bytes_per_sample = bits_per_sample // 8
         num_channels = 1
         sample_rate = 16000
 
-        samples = array.array('h', subprocess.check_output((
+        audio_params = [
+            ('channels'     , num_channels                ),
+            ('deadair'      , 1000                        ),
+            ('encoding'     , 'pcm%d' % (bits_per_sample,)),
+            ('output-format', 'raw'                       ),
+            ('sampling-rate', sample_rate                 ),
+            ('volume'       , volume                      ),
+        ]
+
+        params = ','.join('audio/%s=%s' % (n, v) for n, v in audio_params)
+
+        args = [
             shutil.which('aoss'),
             self._swift_path,
             '-o', '-',
-            '-p',
-                'audio/channels=%s,'
-                'audio/deadair=1000,'
-                'audio/encoding=pcm%s,'
-                'audio/output-format=raw,'
-                'audio/sampling-rate=%s,'
-                'audio/volume=%s'
-                    % (num_channels, bits_per_sample, sample_rate, volume),
-            ssml)))
+            '-p',  params
+        ]
+
+        if lexicon is not None:
+            args.extend(['-l', lexicon])
+
+        args.append(ssml)
+
+        samples = array.array('h', subprocess.check_output(args))
 
         num_samples = len(samples)
         num_blocks = num_samples // num_channels

@@ -29,9 +29,11 @@ class SmsHandler(StoppableThread):
     play_path = None
     sox_path = None
 
-    def __init__(self, sms_queue, swift, backing_sample, melody, bpm=100):
+    def __init__(self, syllables, sms_queue, swift, backing_sample, melody,
+                 bpm=100):
         super().__init__()
         self.daemon = True
+        self._syllables = syllables
         self._sms_queue = sms_queue
         self._melody = melody
         self._spb = 60 / bpm
@@ -43,7 +45,6 @@ class SmsHandler(StoppableThread):
 
     def run(self):
         self._real_words = set()
-
 
         if self.dictionary_path is not None:
             with open(self.dictionary_path) as f:
@@ -87,6 +88,24 @@ class SmsHandler(StoppableThread):
                 % ' '.join(words[:20]))
 
     def render_rap(self, msg_id, words):
+
+        lexicon, translate = self._syllables.build_lexicon(set(words))
+
+        lexpath = '/tmp/%d-lexicon.txt' % (msg_id,)
+        with open(lexpath, 'w') as out:
+            for word, phonemes in lexicon.items():
+                out.write('%s 0 %s\n' % (word, ' '.join(phonemes)))
+
+        trans_words = []
+        for word in words:
+            if word in translate:
+                trans_words.extend(translate[word])
+            else:
+                trans_words.append(word)
+        words = trans_words
+
+        logger.debug(words)
+
         # Make the length of words fit the melody
         notes = sum(1 for pitch, beats in self._melody if pitch != REST)
         diff = notes - len(words)
@@ -115,7 +134,8 @@ class SmsHandler(StoppableThread):
                 ssml = '<s><prosody pitch="%sHz" range="x-low">%s</prosody></s>' \
                     % (pitch, word)
                 func = functools.partial(offsets.__setitem__, word_index)
-                pool.apply_async(text_to_speech, (self._swift, ssml, word_path),
+                pool.apply_async(text_to_speech,
+                                 (self._swift, ssml, word_path, lexpath),
                                  callback=func)
                 word_index += 1
 
@@ -160,6 +180,6 @@ class SmsHandler(StoppableThread):
         return words
 
 
-def text_to_speech(swift, ssml, word_path):
-    return swift.tts_file(ssml, word_path)
+def text_to_speech(swift, ssml, word_path, lexicon):
+    return swift.tts_file(ssml, word_path, lexicon=lexicon)
 
