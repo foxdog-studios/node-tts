@@ -7,7 +7,7 @@ REPO=$(realpath "$(dirname "$(realpath -- "${BASH_SOURCE[0]}")")/..")
 cd -- "${REPO}"
 
 set +o nounset
-source env/bin/activate
+source env3/bin/activate
 set -o nounset
 
 export PYTHONPATH="${PYTHONPATH-}:${REPO}/src"

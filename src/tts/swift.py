@@ -3,6 +3,7 @@ import shutil
 import struct
 import subprocess
 
+
 class Swift:
     def __init__(self, swift_path, threshold=0.2):
         self._swift_path = swift_path
@@ -77,6 +78,4 @@ class Swift:
             previous_sample = sample
 
         return -start_sample / sample_rate
-
-
 
