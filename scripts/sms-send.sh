@@ -49,7 +49,7 @@ cd -- "${REPO}"
 curl --verbose \
      -d "number=${number}" \
      -d "message=${message}" \
-     http://127.0.0.1:8080/
+     "http://${host}:${port}/"
 
 echo
 

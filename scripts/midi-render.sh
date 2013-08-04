@@ -28,7 +28,7 @@ fluidsynth --audio-file-type wav                       \
            --no-midi-in                                \
            --no-shell                                  \
            -o synth.cpu-cores=2                        \
-           --sample-rate 48000                         \
+           --sample-rate 16000                         \
            /usr/share/soundfonts/fluidr3/FluidR3GM.SF2 \
            "${1}"
 

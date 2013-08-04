@@ -28,6 +28,6 @@ class SmsServer:
         }
         for key, value in update.items():
             if value is not None:
-                cherry.config[key] = value
+                cherrypy.config[key] = value
         cherrypy.quickstart(root=self, script_name='', config={'/': {}})
 
