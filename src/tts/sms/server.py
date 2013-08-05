@@ -3,6 +3,8 @@ from collections import namedtuple
 import cherrypy
 
 
+REPLY = 'Thanks! Hey, why not visit foxdogstudios.com?'
+
 SmsMessage = namedtuple('SmsMessage', ('msg_id', 'number', 'message'))
 
 
@@ -11,7 +13,7 @@ class SmsServer:
         self._host = host
         self._port = port
         self._sms_queue = incoming_sms_queue
-        self._reply = reply
+        self._reply = REPLY
         self._msg_id = 0
 
     @cherrypy.expose
