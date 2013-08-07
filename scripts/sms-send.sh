@@ -22,7 +22,7 @@ usage()
     exit 1
 }
 
-host=127.0.0.1
+host=192.168.1.65
 number=+44700900000
 port=8080
 
