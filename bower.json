@@ -1,0 +1,7 @@
+{
+  "name": "text-to-spit",
+  "dependencies": {
+    "popcornjs": "v1.4.0",
+    "jquery": "~2.0.3"
+  }
+}

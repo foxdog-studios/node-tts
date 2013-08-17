@@ -1,6 +1,7 @@
 import functools
 import logging
 import multiprocessing
+import os
 import queue
 import subprocess
 import threading
@@ -30,18 +31,21 @@ class SmsHandler(StoppableThread):
     sox_path = None
 
     def __init__(self, syllables, sms_queue, swift, backing_sample, melody,
-                 bpm=100):
+                 output_dir, webpage_writer, bpm=100, dummy=False):
         super().__init__()
         self.daemon = True
         self._syllables = syllables
         self._sms_queue = sms_queue
         self._melody = melody
+        self._output_dir = output_dir
         self._spb = 60 / bpm
         self._speech = []
         self._rap_mode = False
         self._rap_path = None
         self._swift = swift
+        self._webpage_writer = webpage_writer
         self._backing_sample = backing_sample
+        self._dummy = dummy
 
     def run(self):
         self._real_words = set()
@@ -97,14 +101,20 @@ class SmsHandler(StoppableThread):
                 out.write('%s 0 %s\n' % (word, ' '.join(phonemes)))
 
         trans_words = []
+        original_words = words
+        word_gaps = []
         for word in words:
             if word in translate:
-                trans_words.extend(translate[word])
+                transalation = translate[word]
+                word_gaps.append(len(transalation))
+                trans_words.extend(transalation)
             else:
+                word_gaps.append(len(transalation))
                 trans_words.append(word)
         words = trans_words
 
         logger.debug(words)
+        logger.debug(word_gaps)
 
         # Make the length of words fit the melody
         notes = sum(1 for pitch, beats in self._melody if pitch != REST)
@@ -115,6 +125,10 @@ class SmsHandler(StoppableThread):
             words = words + ['la'] * diff
 
         delay = 0
+        gap_index = 0
+        current_gap = 0
+        current_gap_limit = word_gaps[gap_index]
+        original_word_delays = []
         offsets = {}
         word_index = 0
         word_count = len(words)
@@ -138,6 +152,16 @@ class SmsHandler(StoppableThread):
                                  (self._swift, ssml, word_path, lexpath),
                                  callback=func)
                 word_index += 1
+                current_gap += 1
+                if current_gap == 0 and gap_index == 0:
+                    original_word_delays.append(delay)
+                elif current_gap >= current_gap_limit \
+                        and gap_index < len(word_gaps):
+                    current_gap = 0
+                    gap_index += 1
+                    original_word_delays.append(delay)
+                    if gap_index < len(word_gaps):
+                        current_gap_limit = word_gaps[gap_index]
 
             delay += duration
 
@@ -157,7 +181,7 @@ class SmsHandler(StoppableThread):
         word_delays = [d if d >= 0 else 0 for d in word_delays]
 
         # Mix the rap and the backing track
-        mix_path = '/tmp/%s-mix.wav' % msg_id
+        mix_path = os.path.join(self._output_dir, '%s-mix.wav' % (msg_id,))
         sox_args = [self.sox_path, '-M'] + word_paths \
             + [self._backing_sample, mix_path, 'delay'] \
             + list(map(str, word_delays)) \
@@ -165,7 +189,12 @@ class SmsHandler(StoppableThread):
                 ','.join(str(channel) for channel in range(1, word_count + 2)),
                 'norm']
         logger.debug(' '.join(sox_args))
-        subprocess.check_call(sox_args)
+        if not self._dummy:
+            subprocess.check_call(sox_args)
+
+        self._webpage_writer.write_tts_page(mix_path,
+                                            original_words,
+                                            original_word_delays)
 
         return mix_path
 

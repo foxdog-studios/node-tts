@@ -16,6 +16,7 @@ SYSTEM_PACKAGES=(
     fluidsynth
     python-virtualenv
     python2-virtualenv
+    nodejs
     sox
 )
 
@@ -48,6 +49,19 @@ create_ves()
 install_aur_packages()
 {
     yaourt --noconfirm --needed --sync --refresh "${AUR_PACKAGES[@]}"
+}
+
+install_bower_components()
+{
+    bower install
+}
+
+install_node_modules()
+{
+    sudo npm install -g \
+        bower \
+        grunt
+    npm install
 }
 
 install_python2_packages()

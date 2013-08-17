@@ -17,6 +17,7 @@ if [[ $# == 0 ]]; then
         --bpm 90
         --host "$(hostname -i)"
         --log-level debug
+        --output build/
         phonemes.pkl
         backing_tracks/default.wav
         melodies/default.txt

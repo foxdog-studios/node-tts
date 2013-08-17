@@ -14,6 +14,7 @@ from tts.sms.worker import SmsHandler
 from tts.sms.server import SmsServer
 from tts.swift import Swift
 from tts.syllables import Syllables
+from tts.vis.webpage import WebpageWriter
 
 LOG_LEVELS = (
     logging.CRITICAL,
@@ -32,9 +33,12 @@ LOG_NAME_TO_LEVEL = OrderedDict((name, level)
 def build_argument_parser():
     parser = ArgumentParser()
     parser.add_argument('-b', '--bpm', default=120, type=float, help='rap BPM')
+    parser.add_argument('-d', '--dummy', action='store_true', default=False,
+                        help='do not render any audio')
     parser.add_argument('-H', '--host', help='host to bind to')
     parser.add_argument('-l', '--log-level', choices=LOG_NAME_TO_LEVEL.keys(),
                         default=LOG_LEVEL_TO_NAMES[logging.INFO])
+    parser.add_argument('-o', '--output-dir', help='Directory to place output')
     parser.add_argument('-p', '--port', type=int, help='server port')
     parser.add_argument('-r', '--reply', help='The reply message.')
     parser.add_argument('-s', '--backing-sample', help='backing sample')
@@ -81,7 +85,10 @@ def main(argv=None):
         swift,
         args.backing_track,
         melody,
+        args.output_dir,
+        WebpageWriter(args.output_dir),
         bpm=args.bpm,
+        dummy=args.dummy
     )
     sms_handler.start();
 

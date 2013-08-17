@@ -5,24 +5,25 @@ set -o nounset
 
 usage()
 {
-    echo '
+    host=$(hostname -i)
+    echo "
     Send a fake SMS to TTS
 
     Usage:
 
         # sms-send.sh [-h HOST] [-n NUMBER] [-P PORT] MESSAGE...
 
-    -h  host (default: 127.0.0.1)
+    -h  host (default: ${host})
     -n  number (default: +44700900000)
     -p  port (default: 8080)
 
     MESSAGE
         SMS content
-'
+"
     exit 1
 }
 
-host=192.168.1.65
+host=$(hostname -i)
 number=+44700900000
 port=8080
 

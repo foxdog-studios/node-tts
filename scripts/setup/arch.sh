@@ -44,6 +44,8 @@ if $call_install_aur_packages; then
     install_aur_packages
 fi
 unset call_install_aur_packages
+install_node_modules
+install_bower_components
 create_ves
 install_python2_packages
 install_python3_packages
