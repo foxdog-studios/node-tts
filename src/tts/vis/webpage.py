@@ -34,6 +34,22 @@ WEB_PAGE_TEMPLATE = """
     %(words)s
 </div>
 <script>
+    audio = document.getElementById('text-to-spit');
+    var toggleControls = function() {
+      if (audio.hasAttribute('controls')) {
+        audio.removeAttribute('controls');
+      }
+      else {
+        audio.setAttribute('controls', 'controls');
+      }
+    };
+    document.onkeydown = function(evt) {
+      evt = evt || window.event;
+      if (evt.keyCode == 27) {
+        toggleControls();
+      }
+    };
+
     var pop = Popcorn('#text-to-spit');
     var phrases = {%(phrases)s};
 
@@ -55,9 +71,6 @@ WEB_PAGE_TEMPLATE = """
             });
         });
     });
-
-    pop.play();
-
 </script>
 </body>
 </html>
