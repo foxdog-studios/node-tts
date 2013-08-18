@@ -88,8 +88,8 @@ class SmsHandler(StoppableThread):
         if words:
             self._speech.extend(words)
             logger.error(str(len(self._speech)))
-            self._swift.tts('<s><prosody rate="slow">%s</prosody></s>'
-                % ' '.join(words))
+            #self._swift.tts('<s><prosody rate="slow">%s</prosody></s>'
+            #    % ' '.join(words))
 
     def render_rap(self, msg_id, words):
 

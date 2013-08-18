@@ -30,12 +30,19 @@ WEB_PAGE_TEMPLATE = """
 </head>
 <body>
 <audio id="text-to-spit" src="%(audio_path)s" controls></audio>
+<div id="number" class="word selected">
+  <div>077</div>
+  <div>1719</div>
+  <div>1485</div>
+</div>
 <div id="text">
     %(words)s
 </div>
 <script>
-    audio = document.getElementById('text-to-spit');
+    var numberElement = $('#number');
+    var audio = document.getElementById('text-to-spit');
     var toggleControls = function() {
+      numberElement.toggle();
       if (audio.hasAttribute('controls')) {
         audio.removeAttribute('controls');
       }
@@ -77,7 +84,7 @@ WEB_PAGE_TEMPLATE = """
 """
 
 WORDS_ITEM_HTML_TEMPLATE = """
-<span id="w%(id)d" class="word"></span>
+<span id="w%(id)d" class="word">07717191485</span>
 """
 
 PHRASE_ITEM_JS_TEMPLATE = """
@@ -124,11 +131,15 @@ class WebpageWriter:
         global_word_index = 0
         phrase_items_js = []
         for group_index, words_group in enumerate(grouped_words):
+            if group_index >= len(grouped_word_delays):
+                continue
             word_delays_group = grouped_word_delays[group_index]
             word_items_js = []
             min_start_time = float('inf')
             max_end_time = -float('inf')
             for word_index, word in enumerate(words_group):
+                if word_index >= len(word_delays_group):
+                    continue
                 delay = word_delays_group[word_index]
                 #XXX: Make the first word come in slightly early, to seem like
                 # they synced
