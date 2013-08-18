@@ -84,7 +84,7 @@ WEB_PAGE_TEMPLATE = """
 """
 
 WORDS_ITEM_HTML_TEMPLATE = """
-<span id="w%(id)d" class="word">07717191485</span>
+<span id="w%(id)d" class="word"></span>
 """
 
 PHRASE_ITEM_JS_TEMPLATE = """
