@@ -139,7 +139,7 @@ class SmsHandler(StoppableThread):
                 word_gaps.append(len(transalation))
                 trans_words.extend(transalation)
             else:
-                word_gaps.append(len(transalation))
+                word_gaps.append(1)
                 trans_words.append(word)
         words = trans_words
 
