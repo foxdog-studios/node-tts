@@ -12,7 +12,10 @@ module.exports = (grunt) ->
           flatten: true
           cwd: 'res'
           src: [
-            'foxdog.png'
+            'dino.gif'
+            'fatdino.gif'
+            'fatterdino.gif'
+            'meltingdino.gif'
           ]
           dest: 'build/'
         ]

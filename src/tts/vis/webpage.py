@@ -41,7 +41,7 @@ COUNTER_PAGE_TEMPLATE = """
     <div class="container">
         <div class="power">
         <div>
-            <img class="power-image" src="foxdog.png" width="%(image_width)d%%"/>
+            <img class="power-image" src="%(image_source)s" width="%(image_width)d%%"/>
         </div>
         <span>%(image_width)d%% </span></div>
         <div class="number">
@@ -79,7 +79,7 @@ CREATING_PAGE_TEMPLATE = """
 <body>
     <div class="container">
         <div>
-            <img class="power-image" src="foxdog.png" width="%(image_width)d%%"/>
+            <img class="power-image" src="%(image_source)s" height="%(image_width)d%%"/>
         </div>
     </div>
 </body>
@@ -190,13 +190,24 @@ class WebpageWriter:
 
     def write_counter_page(self, number_of_texts, number_of_notes):
         # Never go over 100%
-        if number_of_texts > number_of_notes:
-            number_of_texts = number_of_notes
+        percent = number_of_texts / number_of_notes * 100
+        if percent >= 100:
+            percent = 100
             template = CREATING_PAGE_TEMPLATE
         else:
             template = COUNTER_PAGE_TEMPLATE
+
+        if percent >= 100:
+            image_source = 'meltingdino.gif'
+        elif percent >= 66:
+            image_source = 'fatterdino.gif'
+        elif percent >= 33:
+            image_source = 'fatdino.gif'
+        else:
+            image_source = 'dino.gif'
         counter_page_data = {
-            'image_width': number_of_texts / number_of_notes * 100,
+            'image_source': image_source,
+            'image_width': percent,
             'number_of_texts': number_of_texts,
             'number_of_notes': number_of_notes,
         }
