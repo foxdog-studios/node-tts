@@ -51,9 +51,15 @@ term() {
     xterm -e "${@}" & disown
 }
 
+term_hold() {
+    xterm -hold & disown
+}
+
 term ./scripts/run.sh
 
 term grunt
+
+term_hold
 
 chromium --incognito http://localhost:8000
 

@@ -57,6 +57,10 @@ class SmsHandler(StoppableThread):
                     if w.isalpha():
                         self._real_words.add(w.lower())
 
+
+        number_of_syllables = self._get_number_of_syllables()
+        number_of_notes = self._get_number_of_notes()
+        self._update_counter_page(number_of_syllables, number_of_notes)
         while not self._stop_event.is_set():
             try:
                 msg_id, number, message = self._sms_queue.get_nowait()
@@ -65,10 +69,7 @@ class SmsHandler(StoppableThread):
                 continue
             if number == 'admin':
                 if message == 'compile':
-                    logger.info('Entering rap mode, compiling rap.')
-                    self._rap_mode = True
-                    self._rap_path = self.render_rap(msg_id, self._speech)
-                    logger.info('Rap compilied.')
+                    self._compile_rap(msg_id)
                 elif message == 'rap' and self._rap_path:
                     subprocess.check_call((self.play_path, '-q',
                         self._rap_path))
@@ -76,9 +77,39 @@ class SmsHandler(StoppableThread):
                     self._rap_mode = False
             elif not self._rap_mode:
                 self.render_speech(message)
-                pass
+                number_of_syllables = self._get_number_of_syllables()
+                number_of_notes = self._get_number_of_notes()
+                self._update_counter_page(number_of_syllables,
+                                          number_of_notes)
+                if number_of_syllables >= number_of_notes:
+                    self._compile_rap(msg_id)
 
             self._sms_queue.task_done()
+
+    def _compile_rap(self, msg_id):
+        logger.info('Entering rap mode, compiling rap.')
+        self._rap_mode = True
+        self._rap_path = self.render_rap(msg_id, self._speech)
+        logger.info('Rap compilied.')
+
+    def _update_counter_page(self, number_of_syllables, number_of_notes):
+        logger.info('%d/%d syllables sent so far', number_of_syllables,
+                number_of_notes)
+        self._webpage_writer.write_counter_page(number_of_syllables,
+                number_of_notes)
+
+    def _get_number_of_notes(self):
+        return sum(1 for pitch, beats in self._melody if pitch != REST)
+
+    def _get_number_of_syllables(self):
+        lexicon, translate = self._syllables.build_lexicon(set(self._speech))
+        number_of_syllables = 0
+        for word in self._speech:
+            if word in translate:
+                number_of_syllables += len(translate[word])
+            else:
+                number_of_syllables += 1
+        return number_of_syllables
 
     def render_speech(self, message):
         if 'cake' in message:
@@ -87,7 +118,6 @@ class SmsHandler(StoppableThread):
         words = self.clean_message(message)
         if words:
             self._speech.extend(words)
-            logger.error(str(len(self._speech)))
             #self._swift.tts('<s><prosody rate="slow">%s</prosody></s>'
             #    % ' '.join(words))
 
@@ -101,7 +131,7 @@ class SmsHandler(StoppableThread):
                 out.write('%s 0 %s\n' % (word, ' '.join(phonemes)))
 
         trans_words = []
-        original_words = words
+        original_words = list(words)
         word_gaps = []
         for word in words:
             if word in translate:
@@ -117,7 +147,7 @@ class SmsHandler(StoppableThread):
         logger.debug(word_gaps)
 
         # Make the length of words fit the melody
-        notes = sum(1 for pitch, beats in self._melody if pitch != REST)
+        notes = self._get_number_of_notes()
         diff = notes - len(words)
         if diff < 0:
             words = words[:diff]

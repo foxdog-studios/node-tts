@@ -4,7 +4,7 @@ import cherrypy
 import random
 
 
-REPLY = '%s. Now visit foxdogstudios.com'
+REPLY = '%s. Now visit http://foxdogstudios.com'
 
 REPLIES = [
     'Just in my pants - a moral position on underwear',
@@ -16,7 +16,7 @@ REPLIES = [
     'Ask us about our binary finger counting course - HIGH 31!! hahaha..',
     'Buy a swan Pedalo and ride it pan-atlantic to Miami spring break 2015',
     'Why not try our battenburger: battenburg and burger',
-    'Special deal on our clapping classes: £4125 for 2 hours',
+    'Special deal on our clapping classes: $4,125 for 2 hours',
     'The Foxdog is an almost invincible creature its only weakness is poor'
     ' time management.'
 ]

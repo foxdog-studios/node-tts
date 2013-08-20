@@ -6,6 +6,16 @@ module.exports = (grunt) ->
           base: 'build/'
           port: 8000
     copy:
+      img:
+        files: [
+          expand: true
+          flatten: true
+          cwd: 'res'
+          src: [
+            'foxdog.png'
+          ]
+          dest: 'build/'
+        ]
       js_vendor:
         files: [
           expand: true

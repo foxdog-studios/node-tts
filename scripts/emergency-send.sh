@@ -39,5 +39,4 @@ the shockwaves for the ladies in the caves to get their groove on maybee im not
 a wonderffuuuul lover but guess who next the cuckkoos nest talkin about my
 generation generation x generation straange the sun dont even shie throught our
 window pane"
-./scripts/compile.sh
 

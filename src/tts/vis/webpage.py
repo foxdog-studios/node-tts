@@ -3,6 +3,89 @@ import os
 
 logger = logging.getLogger(__name__)
 
+COUNTER_PAGE_TEMPLATE = """
+<html>
+<head>
+    <script src="http://localhost:35729/livereload.js"></script>
+    <style type="text/css">
+        body {
+            background-color: black;
+            color: white;
+        }
+        .word {
+           font-weight: bold;
+           font-size: 185px;
+           font-family: monospace;
+           text-align: center;
+           text-transform: uppercase;
+           display: block;
+        }
+        .container {
+            min-width: 100%%;
+        }
+        .power {
+            font-size: 96px;
+            display: inline-block;
+            min-width: 33%%;
+        }
+        .power-image {
+            margin-bottom: 50%%;
+        }
+        .number {
+            display: inline-block;
+            min-width: 66%%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="power">
+        <div>
+            <img class="power-image" src="foxdog.png" width="%(image_width)d%%"/>
+        </div>
+        <span>%(image_width)d%% </span></div>
+        <div class="number">
+            <div class="word">077</div>
+            <div class="word">1719</div>
+            <div class="word">1485</div>
+        </div>
+    </div>
+</body>
+</html>
+"""
+
+CREATING_PAGE_TEMPLATE = """
+<html>
+<head>
+    <script src="http://localhost:35729/livereload.js"></script>
+    <style type="text/css">
+        body {
+            background-color: black;
+            color: white;
+        }
+        .word {
+           font-weight: bold;
+           font-size: 185px;
+           font-family: monospace;
+           text-align: center;
+           text-transform: uppercase;
+           display: block;
+        }
+        .container {
+            min-width: 100%%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <img class="power-image" src="foxdog.png" width="%(image_width)d%%"/>
+        </div>
+    </div>
+</body>
+</html>
+"""
+
 WEB_PAGE_TEMPLATE = """
 <html>
 <head>
@@ -10,6 +93,7 @@ WEB_PAGE_TEMPLATE = """
     <script src="popcorn.js"></script>
     <script src="popcorn.applyclass.js"></script>
     <script src="popcorn.footnote.js"></script>
+    <script src="http://localhost:35729/livereload.js"></script>
     <style type="text/css">
         body {
           background-color: black;
@@ -30,19 +114,12 @@ WEB_PAGE_TEMPLATE = """
 </head>
 <body>
 <audio id="text-to-spit" src="%(audio_path)s" controls></audio>
-<div id="number" class="word selected">
-  <div>077</div>
-  <div>1719</div>
-  <div>1485</div>
-</div>
 <div id="text">
     %(words)s
 </div>
 <script>
-    var numberElement = $('#number');
     var audio = document.getElementById('text-to-spit');
     var toggleControls = function() {
-      numberElement.toggle();
       if (audio.hasAttribute('controls')) {
         audio.removeAttribute('controls');
       }
@@ -111,6 +188,20 @@ class WebpageWriter:
         self._build_dir = build_dir
         self._words_per_phrase=words_per_phrase
 
+    def write_counter_page(self, number_of_texts, number_of_notes):
+        # Never go over 100%
+        if number_of_texts > number_of_notes:
+            number_of_texts = number_of_notes
+            template = CREATING_PAGE_TEMPLATE
+        else:
+            template = COUNTER_PAGE_TEMPLATE
+        counter_page_data = {
+            'image_width': number_of_texts / number_of_notes * 100,
+            'number_of_texts': number_of_texts,
+            'number_of_notes': number_of_notes,
+        }
+        self._write_index_html(template % counter_page_data)
+
     def write_tts_page(self, mix_path, words, word_delays):
         logger.info('writing tts page %s\n%s\n%s', mix_path, words,
             word_delays)
@@ -119,8 +210,11 @@ class WebpageWriter:
             'words': self._build_words_html(),
             'phrases': self._build_phrases(words, word_delays),
         }
+        self._write_index_html(WEB_PAGE_TEMPLATE % tts_data)
+
+    def _write_index_html(self, page_text):
         with open(os.path.join(self._build_dir, 'index.html'), 'w') as web_page:
-            web_page.write(WEB_PAGE_TEMPLATE % tts_data)
+            web_page.write(page_text)
 
     def _build_phrases(self, words, word_delays):
         def chunks(l, n):
