@@ -6,6 +6,20 @@ module.exports = (grunt) ->
           base: 'build/'
           port: 8000
     copy:
+      audio:
+        files: [
+          expand: true
+          flatten: true
+          cwd: 'res'
+          src: [
+            'baby.ogg'
+            'kid.ogg'
+            'teenager.ogg'
+            'fat.ogg'
+            'final_form.ogg'
+          ]
+          dest: 'build/'
+        ]
       img:
         files: [
           expand: true

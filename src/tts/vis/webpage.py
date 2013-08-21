@@ -40,10 +40,12 @@ COUNTER_PAGE_TEMPLATE = """
 <body>
     <div class="container">
         <div class="power">
-        <div>
-            <img class="power-image" src="%(image_source)s" width="%(image_width)d%%"/>
+            <div>
+                <img class="power-image" src="%(image_source)s" width="%(image_width)d%%"/>
+            </div>
+            <span>%(image_width)d%% </span><br/>
+            <audio src="%(audio_source)s" autoplay/>
         </div>
-        <span>%(image_width)d%% </span></div>
         <div class="number">
             <div class="word">077</div>
             <div class="word">1719</div>
@@ -82,6 +84,7 @@ CREATING_PAGE_TEMPLATE = """
             <img class="power-image" src="%(image_source)s" height="%(image_width)d%%"/>
         </div>
     </div>
+    <audio src="%(audio_source)s" autoplay loop/>
 </body>
 </html>
 """
@@ -132,7 +135,8 @@ WEB_PAGE_TEMPLATE = """
 <body>
 <div id="overlay">
 </div>
-<audio id="text-to-spit" src="%(audio_path)s" controls></audio>
+<audio id="text-to-spit" src="%(audio_path)s"></audio>
+<audio src="%(audio_source)s" autoplay></audio>
 <div id="text">
     %(words)s
 </div>
@@ -143,12 +147,6 @@ WEB_PAGE_TEMPLATE = """
     var toggleControls = function() {
       overlay.toggle();
       pop.play();
-      if (audio.hasAttribute('controls')) {
-        audio.removeAttribute('controls');
-      }
-      else {
-        audio.setAttribute('controls', 'controls');
-      }
     };
     document.onkeydown = function(evt) {
       evt = evt || window.event;
@@ -220,14 +218,22 @@ class WebpageWriter:
             template = COUNTER_PAGE_TEMPLATE
 
         if percent >= 100:
+            audio_source = 'fat.ogg'
             image_source = 'meltingdino.gif'
         elif percent >= 66:
+            audio_source = 'teenager.ogg'
             image_source = 'fatterdino.gif'
         elif percent >= 33:
+            audio_source = 'kid.ogg'
             image_source = 'fatdino.gif'
         else:
+            if percent > 0:
+                audio_source = 'baby.ogg'
+            else:
+                audio_source = ''
             image_source = 'dino.gif'
         counter_page_data = {
+            'audio_source': audio_source,
             'image_source': image_source,
             'image_width': percent,
             'number_of_texts': number_of_texts,
@@ -239,6 +245,7 @@ class WebpageWriter:
         logger.info('writing tts page %s\n%s\n%s', mix_path, words,
             word_delays)
         tts_data = {
+            'audio_source': 'final_form.ogg',
             'audio_path': os.path.basename(mix_path),
             'words': self._build_words_html(),
             'phrases': self._build_phrases(words, word_delays),
