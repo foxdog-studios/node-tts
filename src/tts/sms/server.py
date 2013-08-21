@@ -1,54 +1,24 @@
-from collections import namedtuple
-
 import cherrypy
-import random
 
-
-REPLY = '%s. Now visit foxdogstudios.com'
-
-REPLIES = [
-    'Just in my pants - a moral position on underwear',
-    'Company mission: end football now, do your part',
-    'Our ideal holiday: cross dressing in Paris',
-    'FDS believe in unlimited poppadoms',
-    'FDS suck, period',
-    'V. plzd 2 announce FDS hd kidz, names are haddock, turbot and lemon sole',
-    'Ask us about our binary finger counting course - HIGH 31!! hahaha..',
-    'Buy a swan Pedalo and ride it pan-atlantic to Miami spring break 2015',
-    'Why not try our battenburger: battenburg and burger',
-    'Special deal on our clapping classes: £4125 for 2 hours',
-    'The Foxdog is an almost invincible creature its only weakness is poor'
-    ' time management.'
-]
-
-_replies = []
-for r in REPLIES:
-   _replies.append(REPLY % (r,))
-REPLIES = _replies
-
-SmsMessage = namedtuple('SmsMessage', ('msg_id', 'number', 'message'))
+from tts.messages import Message
 
 
 class SmsServer:
-    def __init__(self, incoming_sms_queue, host=None, port=None, reply=''):
+    def __init__(self, handler, host=None, port=None):
+        self._handler = handler
         self._host = host
         self._port = port
-        self._sms_queue = incoming_sms_queue
-        self._replies = REPLIES
-        self._msg_id = 0
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def index(self, message=None, number=None):
-        self._sms_queue.put(SmsMessage(self._msg_id, number, message))
-        self._msg_id += 1
-        return [{'number' : number, 'message' : random.choice(self._replies)}]
+        message = Message(message, number=number)
+        reply = self._handler.handle(message)
+        return [] if reply is None else [reply]
 
-    def mainloop(self):
-        update = {
-            'server.socket_host': self._host,
-            'server.socket_port': self._port,
-        }
+    def serve(self):
+        update = {'server.socket_host': self._host,
+                  'server.socket_port': self._port}
         for key, value in update.items():
             if value is not None:
                 cherrypy.config[key] = value

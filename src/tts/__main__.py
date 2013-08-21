@@ -16,28 +16,12 @@ from tts.swift import Swift
 from tts.syllables import Syllables
 from tts.vis.webpage import WebpageWriter
 
-LOG_LEVELS = (
-    logging.CRITICAL,
-    logging.ERROR,
-    logging.WARNING,
-    logging.INFO,
-    logging.DEBUG
-)
-
-LOG_LEVEL_TO_NAMES = OrderedDict((level, logging.getLevelName(level).lower())
-                                 for level in LOG_LEVELS)
-LOG_NAME_TO_LEVEL = OrderedDict((name, level)
-                                for level, name in LOG_LEVEL_TO_NAMES.items())
-
-
 def build_argument_parser():
     parser = ArgumentParser()
     parser.add_argument('-b', '--bpm', default=120, type=float, help='rap BPM')
     parser.add_argument('-d', '--dummy', action='store_true', default=False,
                         help='do not render any audio')
     parser.add_argument('-H', '--host', help='host to bind to')
-    parser.add_argument('-l', '--log-level', choices=LOG_NAME_TO_LEVEL.keys(),
-                        default=LOG_LEVEL_TO_NAMES[logging.INFO])
     parser.add_argument('-o', '--output-dir', help='Directory to place output')
     parser.add_argument('-p', '--port', type=int, help='server port')
     parser.add_argument('-r', '--reply', help='The reply message.')
@@ -52,17 +36,7 @@ def build_argument_parser():
 
 
 def main(argv=None):
-    global logger
 
-    if argv is None:
-        argv = sys.argv
-    args = build_argument_parser().parse_args(args=argv[1:])
-
-    logging.basicConfig(
-            datefmt='%H:%M:%S',
-            format='[%(levelname).1s %(asctime)s] %(message)s',
-            level=LOG_NAME_TO_LEVEL[args.log_level])
-    logger = logging.getLogger(__name__)
 
     SmsHandler.dictionary_path = args.words
     SmsHandler.play_path = shutil.which('play')
@@ -106,6 +80,24 @@ def main(argv=None):
 
     return 0
 
+
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+    args = build_argument_parser().parse_args(args=argv[1:])
+
+    import yaml
+    from tts.config import Configuration
+
+    config = Configuration(path='tts.yaml')
+    from pprint import pprint
+    from tts.sms.server import SmsServer
+    from tts.messages.handler import MessageHandler
+    handler = MessageHandler(config.get_message_cleaner(),
+                             config.get_replies())
+    server = SmsServer(handler, host=config.host, port=config.port)
+    server.serve()
+    return 0
 
 if __name__ == '__main__':
     try:
