@@ -15,6 +15,7 @@ module.exports = (grunt) ->
             'dino.gif'
             'fatdino.gif'
             'fatterdino.gif'
+            'finaldino.gif'
             'meltingdino.gif'
           ]
           dest: 'build/'

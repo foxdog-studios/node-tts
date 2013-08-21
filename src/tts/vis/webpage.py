@@ -96,7 +96,8 @@ WEB_PAGE_TEMPLATE = """
     <script src="http://localhost:35729/livereload.js"></script>
     <style type="text/css">
         body {
-          background-color: black;
+          background: url('finaldino.gif') no-repeat center center fixed black;
+          background-size: 768px;
         }
         .word {
            color: grey;
@@ -105,21 +106,43 @@ WEB_PAGE_TEMPLATE = """
            text-align: center;
            text-transform: uppercase;
            display: block;
+          -webkit-text-stroke-width: 5px;
+          -webkit-text-stroke-color: black;
         }
         .word.selected {
            color: white;
            font-weight: bold;
         }
+        #overlay {
+          display: none;
+          position: absolute;
+          left: 0%%; /* makes the div span all the way across the viewing area */
+          top: 0%%; /* makes the div span all the way across the viewing area */
+          background-color: black;
+          -moz-opacity: 0.7; /* makes the div transparent, so you have a cool overlay effect */
+          opacity: .70;
+          filter: alpha(opacity=70);
+          width: 100%%;
+          height: 100%%;
+          z-index: -90;
+        }
+    </style
     </style>
 </head>
 <body>
+<div id="overlay">
+</div>
 <audio id="text-to-spit" src="%(audio_path)s" controls></audio>
 <div id="text">
     %(words)s
 </div>
 <script>
+    var pop = Popcorn('#text-to-spit');
     var audio = document.getElementById('text-to-spit');
+    var overlay = $('#overlay');
     var toggleControls = function() {
+      overlay.toggle();
+      pop.play();
       if (audio.hasAttribute('controls')) {
         audio.removeAttribute('controls');
       }
@@ -134,7 +157,6 @@ WEB_PAGE_TEMPLATE = """
       }
     };
 
-    var pop = Popcorn('#text-to-spit');
     var phrases = {%(phrases)s};
 
     $.each(phrases, function(pId, phrase) {
