@@ -11,7 +11,6 @@ REPLIES = [
     'Company mission: end football now, do your part',
     'Our ideal holiday: cross dressing in Paris',
     'FDS believe in unlimited poppadoms',
-    'FDS suck, period',
     'V. plzd 2 announce FDS hd kidz, names are haddock, turbot and lemon sole',
     'Ask us about our binary finger counting course - HIGH 31!! hahaha..',
     'Buy a swan Pedalo and ride it pan-atlantic to Miami spring break 2015',

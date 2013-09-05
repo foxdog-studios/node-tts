@@ -5,23 +5,33 @@ set -o nounset
 
 usage()
 {
-    host=$(hostname -i)
     echo "
     Send a fake SMS to TTS
 
     Usage:
 
-        # sms-send.sh [-h HOST] [-n NUMBER] [-P PORT] MESSAGE...
+        # sms-send.sh [-h HOST] [-n NUMBER] [-P PORT] [MESSAGE...]
 
-    -h  host (default: ${host})
+    -h  host (default: $(hostname -i ))
     -n  number (default: +44700900000)
     -p  port (default: 8080)
 
     MESSAGE
-        SMS content
+        SMS content. If not given, a short message is selected at
+        random.
 "
     exit 1
 }
+
+messages=(
+    'I have been to the dark side of the moon'
+    'Tomorrow I am going to the super market'
+    'Why not put your finger in the socket'
+    'Do is matter that I have lost my SIM card'
+    'Take this to the cleaners I spilt concrete on it'
+    'This is the last time I tell you do not fall over'
+)
+
 
 host=$(hostname -i)
 number=+44700900000
@@ -39,10 +49,14 @@ done
 shift $(( $OPTIND - 1 ))
 
 if [[ $# == 0 ]]; then
-    usage
+    message=$(
+        for m in "${messages[@]}"; do
+            echo $m
+        done | shuf -n 1
+    )
+else
+    message="${*}"
 fi
-
-message="${*}"
 
 REPO=$(realpath "$(dirname "$(realpath -- "${BASH_SOURCE[0]}")")/..")
 cd -- "${REPO}"

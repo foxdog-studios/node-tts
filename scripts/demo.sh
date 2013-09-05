@@ -37,10 +37,10 @@ cd -- "${REPO}"
 # =============================================================================
 
 clean_up() {
-    killall -9 chromium node python || true
+    killall -9 node python || true
 }
 
-trap clean_up SIGINT SIGTERM EXIT
+trap clean_up EXIT
 
 
 # =============================================================================
@@ -48,18 +48,15 @@ trap clean_up SIGINT SIGTERM EXIT
 # =============================================================================
 
 term() {
-    xterm -e "${@}" & disown
-}
-
-term_hold() {
-    xterm -hold & disown
+    xterm -hold -e "${@}" &
 }
 
 term ./scripts/run.sh
 
 term grunt
 
-term_hold
+konsole &
 
-chromium --incognito http://localhost:8000
+sleep 2
+chromium --incognito --user-data-dir=/tmp http://localhost:8000
 
