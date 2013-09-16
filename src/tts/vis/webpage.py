@@ -277,8 +277,6 @@ class WebpageWriter:
                 delay = word_delays_group[word_index]
                 #XXX: Make the first word come in slightly early, to seem like
                 # they synced
-                if global_word_index == 0 and delay > 0:
-                    delay -= 0.1
                 if global_word_index < len(word_delays) -1:
                     word_end = word_delays[global_word_index + 1]
                 else:

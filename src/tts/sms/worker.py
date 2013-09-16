@@ -181,17 +181,17 @@ class SmsHandler(StoppableThread):
                 pool.apply_async(text_to_speech,
                                  (self._swift, ssml, word_path, lexpath),
                                  callback=func)
-                word_index += 1
                 current_gap += 1
                 if current_gap == 0 and gap_index == 0:
-                    original_word_delays.append(delay)
+                    original_word_delays.append((word_index, delay))
                 elif current_gap >= current_gap_limit \
                         and gap_index < len(word_gaps):
                     current_gap = 0
                     gap_index += 1
-                    original_word_delays.append(delay)
+                    original_word_delays.append((word_index, delay))
                     if gap_index < len(word_gaps):
                         current_gap_limit = word_gaps[gap_index]
+                word_index += 1
 
             delay += duration
 
@@ -207,8 +207,16 @@ class SmsHandler(StoppableThread):
             # Didn't render any words!
             return
 
+        # Apply the offsets
         word_delays = [delay + offsets[i] for i, delay in enumerate(word_delays)]
         word_delays = [d if d >= 0 else 0 for d in word_delays]
+
+        offset_original_word_delays = []
+        for index, delay in original_word_delays:
+            offset = offsets[index]
+            offset_original_word_delays.append(delay + offset)
+        offset_original_word_delays = [d if d >= 0 else 0 \
+                for d in offset_original_word_delays]
 
         # Mix the rap and the backing track
         mix_path = os.path.join(self._output_dir, '%s-mix.wav' % (msg_id,))
@@ -224,7 +232,7 @@ class SmsHandler(StoppableThread):
 
         self._webpage_writer.write_tts_page(mix_path,
                                             original_words,
-                                            original_word_delays)
+                                            offset_original_word_delays)
 
         return mix_path
 
