@@ -44,7 +44,7 @@ COUNTER_PAGE_TEMPLATE = """
                 <img class="power-image" src="%(image_source)s" width="%(image_width)d%%"/>
             </div>
             <span>%(image_width)d%% </span><br/>
-            <audio src="%(audio_source)s" autoplay/>
+            <audio id="sfx" src="%(audio_source)s"/>
         </div>
         <div class="number">
             <div class="word">077</div>
@@ -52,6 +52,15 @@ COUNTER_PAGE_TEMPLATE = """
             <div class="word">1485</div>
         </div>
     </div>
+    <script src="jquery.js"></script>
+    <script>
+        $(document).ready(function() {
+            var sfx = document.getElementById('sfx');
+            sfx.volume = 0.5;
+            console.log(sfx.volume);
+            sfx.play();
+        });
+    </script>
 </body>
 </html>
 """
@@ -84,7 +93,16 @@ CREATING_PAGE_TEMPLATE = """
             <img class="power-image" src="%(image_source)s" height="%(image_width)d%%"/>
         </div>
     </div>
-    <audio src="%(audio_source)s" autoplay loop/>
+    <audio id="sfx" src="%(audio_source)s" autoplay loop/>
+    <script src="jquery.js"></script>
+    <script>
+        $(document).ready(function() {
+            var sfx = document.getElementById('sfx');
+            sfx.volume = 0.5;
+            console.log(sfx.volume);
+            sfx.play();
+        });
+    </script>
 </body>
 </html>
 """
@@ -129,7 +147,6 @@ WEB_PAGE_TEMPLATE = """
           height: 100%%;
           z-index: -90;
         }
-    </style
     </style>
 </head>
 <body>
