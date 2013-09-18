@@ -11,6 +11,7 @@ set -o nounset
 check_network_connection=true
 configure_audio=true
 configure_displays=true
+kill_konsole=true
 launch_grunt=true
 launch_server=true
 launch_viewer=true
@@ -25,12 +26,13 @@ usage() {
 
     Usage:
 
-        # gig.sh [-ACDGNPSVW]
+        # gig.sh [-ACDGKNPSVW]
 
     -A  do not configure audio
     -C  do not perform pre or post clean up
     -D  do not configure displays
     -G  do not launch grunt
+    -K  do not kill konsole
     -N  do not check network connection
     -P  do not perform sanity checks
     -S  do not launch server
@@ -40,12 +42,13 @@ usage() {
     exit 1
 }
 
-while getopts :ACDGNPSVW opt; do
+while getopts :ACDGKNPSVW opt; do
     case "${opt}" in
         A) configure_audio=false ;;
         C) perform_clean_up=false ;;
         D) configure_displays=false ;;
         G) launch_grunt=false ;;
+        K) kill_konsole=false ;;
         N) check_network_connection=false ;;
         P) perform_sanity_checks=false ;;
         S) launch_server=false ;;
@@ -195,9 +198,12 @@ fi
 
 if $launch_viewer; then
     start 'Launching viewer'; echo
-    google-chrome --incognito                                                 \
-                  --kiosk                                                     \
-                  http://localhost:8000/ &
+    (
+        google-chrome --incognito                                             \
+                      --kiosk                                                 \
+                      http://localhost:8000/
+        xdotool key alt+shift+space
+    ) &
     until wmctrl -a 'Google Chrome'; do
         sleep 0.1
     done
@@ -224,4 +230,15 @@ fi
 # =============================================================================
 
 read -p "$(echo -e '\e[34mPress RETURN to exit\e[0m ')"
+
+
+# =============================================================================
+# = Kill konsole                                                              =
+# =============================================================================
+
+if $kill_konsole; then
+    start 'Killing konsole'
+    killall konsole || true
+    complete 'Konsole killed'
+fi
 
