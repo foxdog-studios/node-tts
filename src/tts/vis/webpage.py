@@ -47,9 +47,9 @@ COUNTER_PAGE_TEMPLATE = """
             <audio id="sfx" src="%(audio_source)s"/>
         </div>
         <div class="number">
-            <div class="word">077</div>
-            <div class="word">1719</div>
-            <div class="word">1485</div>
+            <div class="word">075</div>
+            <div class="word">989</div>
+            <div class="word">34450</div>
         </div>
     </div>
     <script src="jquery.js"></script>

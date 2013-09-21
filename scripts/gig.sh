@@ -122,7 +122,7 @@ complete 'Working directory set'
 if $check_network_connection; then
     start 'Checking network connection'; echo
     # Ping eldog's Android device
-    ping -q -c 1 192.168.1.148
+    ping -q -c 1 192.168.1.147
     complete 'Connected to network'
 fi
 
