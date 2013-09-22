@@ -10,14 +10,14 @@ set +o nounset
 source env3/bin/activate
 set -o nounset
 
-export PYTHONPATH="${PYTHONPATH-}:${REPO}/src"
+export PYTHONPATH="${PYTHONPATH-}:${REPO}/build"
 
 if [[ $# == 0 ]]; then
     args=(
         --bpm 90
         --host "$(hostname -i)"
         --log-level debug
-        --output build/
+        --output build/website
         phonemes.pkl
         backing_tracks/default.wav
         melodies/default.txt

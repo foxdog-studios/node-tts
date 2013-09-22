@@ -1,0 +1,56 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+  <style>
+    body {
+      background: url('/img/finaldino.gif') no-repeat center center fixed black;
+      background-size: 768px;
+    }
+  </style>
+  <div id="overlay"></div>
+  <audio id="text-to-spit" src="/audio/{{ popcorn_src }}"></audio>
+  <audio src="/audio/{{ audio_src }}" autoplay></audio>
+  <div id="text">
+    {{ words }}
+  </div>
+{% endblock %}
+
+{% block script %}
+  <script src="/js/lib/vendor/popcorn.js"></script>
+  <script src="/js/lib/vendor/popcorn.applyclass.js"></script>
+  <script src="/js/lib/vendor/popcorn.footnote.js"></script>
+  <script>
+    var pop = new Popcorn('#text-to-spit');
+    var audio = $('#text-to-spit').get(0);
+    var overlay = $('#overlay');
+
+    $(document).keydown(function (evt) {
+      if (evt && evt.keyCode == 27) {
+        overlay.toggle();
+        pop.play();
+      }
+    });
+
+    var phrases = { {{ phrases }} };
+
+    $.each(phrases, function (pId, phrase) {
+      $.each(phrase.words, function (wId, word) {
+        pop.footnote({
+          start: phrase.start,
+          end: phrase.end,
+          text: word.word,
+          target: wId
+        });
+        pop.footnote({
+          start: word.start,
+          end: word.end,
+          text: '',
+          target: wId,
+          effect: 'applyclass',
+          applyclass: 'selected'
+        });
+      });
+    });
+  </script>
+{% endblock %}
+

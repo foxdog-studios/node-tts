@@ -1,0 +1,19 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+  <div>
+    <img class="power-image" src="/img/{{ image_src }}" height="{{ width }}%" />
+  </div>
+  <audio id="sfx" src="/audio/{{ audio_src }}" autoplay loop />
+{% endblock %}
+
+{% block script %}
+  <script>
+    $(document).ready(function () {
+      var sfx = $('#sfx').get(0);
+      sfx.volume = 0.5;
+      sfx.play();
+    });
+  </script>
+{% endblock %}
+

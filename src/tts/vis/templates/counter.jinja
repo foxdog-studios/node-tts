@@ -1,0 +1,28 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+  <div class="power">
+    <div>
+      <img class="power-image" src="/img/{{ image_src }}" width="{{ width }}%" />
+    </div>
+    {{ width }}%
+    <br/>
+    <audio id="sfx" src="/audio/{{ audio_src }}" />
+  </div>
+  <div class="number">
+    <div class="word">075</div>
+    <div class="word">989</div>
+    <div class="word">34450</div>
+  </div>
+{% endblock %}
+
+{% block script %}
+  <script>
+    $(document).ready(function () {
+      var sfx = $("#sfx").get(0);
+      sfx.volume = 0.5;
+      sfx.play();
+    });
+  </script>
+{% endblock %}
+

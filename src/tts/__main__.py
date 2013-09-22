@@ -38,9 +38,9 @@ def build_argument_parser():
     parser.add_argument('-H', '--host', help='host to bind to')
     parser.add_argument('-l', '--log-level', choices=LOG_NAME_TO_LEVEL.keys(),
                         default=LOG_LEVEL_TO_NAMES[logging.INFO])
-    parser.add_argument('-o', '--output-dir', help='Directory to place output')
+    parser.add_argument('-o', '--output-dir', help='directory to place output')
     parser.add_argument('-p', '--port', type=int, help='server port')
-    parser.add_argument('-r', '--reply', help='The reply message.')
+    parser.add_argument('-r', '--reply', help='reply message')
     parser.add_argument('-s', '--backing-sample', help='backing sample')
     parser.add_argument('-t', '--threshold', default=0.2, type=float,
                         help='volume at which a word sample starts')
@@ -85,7 +85,7 @@ def main(argv=None):
         swift,
         args.backing_track,
         melody,
-        args.output_dir,
+        args.output_dir + '/audio',
         WebpageWriter(args.output_dir),
         bpm=args.bpm,
         dummy=args.dummy
