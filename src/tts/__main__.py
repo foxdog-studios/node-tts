@@ -2,7 +2,6 @@
 
 from argparse import ArgumentParser
 from collections import OrderedDict
-import logging
 import pickle
 import queue
 import os
@@ -16,19 +15,6 @@ from tts.swift import Swift
 from tts.syllables import Syllables
 from tts.vis.webpage import WebpageWriter
 
-LOG_LEVELS = (
-    logging.CRITICAL,
-    logging.ERROR,
-    logging.WARNING,
-    logging.INFO,
-    logging.DEBUG
-)
-
-LOG_LEVEL_TO_NAMES = OrderedDict((level, logging.getLevelName(level).lower())
-                                 for level in LOG_LEVELS)
-LOG_NAME_TO_LEVEL = OrderedDict((name, level)
-                                for level, name in LOG_LEVEL_TO_NAMES.items())
-
 
 def build_argument_parser():
     parser = ArgumentParser()
@@ -36,8 +22,6 @@ def build_argument_parser():
     parser.add_argument('-d', '--dummy', action='store_true', default=False,
                         help='do not render any audio')
     parser.add_argument('-H', '--host', help='host to bind to')
-    parser.add_argument('-l', '--log-level', choices=LOG_NAME_TO_LEVEL.keys(),
-                        default=LOG_LEVEL_TO_NAMES[logging.INFO])
     parser.add_argument('-o', '--output-dir', help='directory to place output')
     parser.add_argument('-p', '--port', type=int, help='server port')
     parser.add_argument('-r', '--reply', help='reply message')
@@ -52,17 +36,9 @@ def build_argument_parser():
 
 
 def main(argv=None):
-    global logger
-
     if argv is None:
         argv = sys.argv
     args = build_argument_parser().parse_args(args=argv[1:])
-
-    logging.basicConfig(
-            datefmt='%H:%M:%S',
-            format='[%(levelname).1s %(asctime)s] %(message)s',
-            level=LOG_NAME_TO_LEVEL[args.log_level])
-    logger = logging.getLogger(__name__)
 
     SmsHandler.dictionary_path = args.words
     SmsHandler.play_path = shutil.which('play')
@@ -101,8 +77,6 @@ def main(argv=None):
     server.mainloop();
 
     sms_handler.join()
-
-    logger.info('Finished')
 
     return 0
 
