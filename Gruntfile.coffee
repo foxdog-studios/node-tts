@@ -28,7 +28,7 @@ module.exports = (grunt) ->
     connect:
       serve:
         options:
-          base: 'build/website'
+          base: 'build'
           port: 8000
           middleware: (connect, options) -> [
             require('connect-livereload')()
@@ -51,7 +51,7 @@ module.exports = (grunt) ->
           'kid.ogg'
           'teenager.ogg'
         ]
-        dest: 'build/website/audio'
+        dest: 'build/audio'
 
       img:
         expand: true
@@ -63,7 +63,7 @@ module.exports = (grunt) ->
           'finaldino.gif'
           'meltingdino.gif'
         ]
-        dest: 'build/website/img'
+        dest: 'build/img'
 
       jsVendor:
         expand: true
@@ -75,18 +75,12 @@ module.exports = (grunt) ->
           'popcornjs/effects/applyclass/popcorn.applyclass.js'
           'popcornjs/plugins/footnote/popcorn.footnote.js'
         ]
-        dest: 'build/website/js/lib/vendor'
+        dest: 'build/js/lib/vendor'
 
       sass:
         expand: true
         cwd: 'src'
-        src: '**/*.sass'
-        dest: 'build/website'
-
-      tts:
-        expand: true
-        cwd: 'src'
-        src: 'tts/**'
+        src: 'sass/**/*.sass'
         dest: 'build'
 
 
@@ -97,7 +91,7 @@ module.exports = (grunt) ->
     sass:
       compile:
         files:
-          'build/website/css/style.css': 'build/website/sass/style.sass'
+          'build/css/style.css': 'build/sass/style.sass'
         options:
           sourcemap: true
 
@@ -111,16 +105,13 @@ module.exports = (grunt) ->
         files: 'res/**/*.ogg'
         tasks: 'copy:audio'
       html:
-        files: 'build/website/index.html'
+        files: 'build/index.html'
       img:
         files: 'res/*.gif'
         tasks: 'copy:img'
       sass:
         files: 'src/sass/**/*.sass'
         tasks: 'buildSass'
-      tts:
-        files: 'src/tts/**'
-        tasks: 'copy:tts'
       options:
         livereload: true
 
@@ -141,7 +132,7 @@ module.exports = (grunt) ->
     build: ['copy', 'sass']
     buildSass: ['copy:sass', 'sass']
     continuous: ['connect', 'watch']
-    default: ['build', 'continuous']
+    default: ['rebuild', 'continuous']
     rebuild: ['clean', 'build']
 
   for task in gruntContribTasks

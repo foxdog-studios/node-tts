@@ -4,27 +4,14 @@ import multiprocessing
 import os
 import queue
 import subprocess
-import threading
 import time
 
 from tts.constants import REST
 
 logger = logging.getLogger(__name__)
 
-class StoppableThread(threading.Thread):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._stop_event = threading.Event()
 
-    def join(self):
-        self.stop_soon()
-        super().join()
-
-    def stop_soon(self):
-        self._stop_event.set()
-
-
-class SmsHandler(StoppableThread):
+class SmsHandler:
 
     dictionary_path = None
     play_path = None
@@ -63,10 +50,12 @@ class SmsHandler(StoppableThread):
         self._update_counter_page(number_of_syllables, number_of_notes)
         while not self._stop_event.is_set():
             try:
-                msg_id, number, message = self._sms_queue.get_nowait()
+                msg = self._sms_queue.get_nowait()
             except queue.Empty:
                 time.sleep(0.1)
                 continue
+            number = msg.number
+            message = msg.message
             if number == 'admin':
                 if message == 'compile':
                     self._compile_rap(msg_id)
@@ -118,8 +107,6 @@ class SmsHandler(StoppableThread):
         words = self.clean_message(message)
         if words:
             self._speech.extend(words)
-            #self._swift.tts('<s><prosody rate="slow">%s</prosody></s>'
-            #    % ' '.join(words))
 
     def render_rap(self, msg_id, words):
 

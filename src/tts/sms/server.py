@@ -1,7 +1,7 @@
-from collections import namedtuple
-
 import cherrypy
 import random
+
+from tts.message import Message
 
 
 REPLY = '%s. Now visit http://foxdogstudios.com'
@@ -25,22 +25,20 @@ for r in REPLIES:
    _replies.append(REPLY % (r,))
 REPLIES = _replies
 
-SmsMessage = namedtuple('SmsMessage', ('msg_id', 'number', 'message'))
-
-
 class SmsServer:
     def __init__(self, incoming_sms_queue, host=None, port=None, reply=''):
         self._host = host
         self._port = port
         self._sms_queue = incoming_sms_queue
         self._replies = REPLIES
-        self._msg_id = 0
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def index(self, message=None, number=None):
-        self._sms_queue.put(SmsMessage(self._msg_id, number, message))
-        self._msg_id += 1
+        if message is None or number is None:
+            return
+        message = Message(number, message)
+        self._sms_queue.put(message)
         return [{'number' : number, 'message' : random.choice(self._replies)}]
 
     def mainloop(self):

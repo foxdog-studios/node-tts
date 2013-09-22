@@ -73,7 +73,6 @@ class WebpageWriter:
             'number_of_texts': number_of_texts,
             'number_of_notes': number_of_notes,
         }
-        print(counter_page_data)
         text = template.render(**counter_page_data)
         self._write_index_html(text)
 

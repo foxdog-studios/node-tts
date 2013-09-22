@@ -7,6 +7,10 @@ import queue
 import os
 import shutil
 import sys
+import threading
+
+from cherrypy.process import plugins
+import cherrypy
 
 from tts.melody import parse_melody
 from tts.sms.worker import SmsHandler
@@ -14,6 +18,22 @@ from tts.sms.server import SmsServer
 from tts.swift import Swift
 from tts.syllables import Syllables
 from tts.vis.webpage import WebpageWriter
+
+
+class SmsHandlerPlugin(plugins.SimplePlugin):
+    def __init__(self, engine, sms_handler):
+        super().__init__(engine)
+        self._sms_handler = sms_handler
+        self._sms_handler._stop_event = threading.Event()
+
+    def start(self):
+        self._thread = threading.Thread(target=self._sms_handler.run,
+                                        name='SMS handler')
+        self._thread.start()
+
+    def stop(self):
+        self._sms_handler._stop_event.set()
+        self._thread.join()
 
 
 def build_argument_parser():
@@ -55,7 +75,7 @@ def main(argv=None):
         phonemes = pickle.load(infile)
     syllables = Syllables(phonemes)
 
-    sms_handler = SmsHandler(
+    sms_handler = SmsHandlerPlugin(cherrypy.engine, SmsHandler(
         syllables,
         incoming_sms,
         swift,
@@ -65,8 +85,8 @@ def main(argv=None):
         WebpageWriter(args.output_dir),
         bpm=args.bpm,
         dummy=args.dummy
-    )
-    sms_handler.start();
+    ))
+    sms_handler.subscribe()
 
     server = SmsServer(
         incoming_sms,
@@ -75,8 +95,6 @@ def main(argv=None):
         reply=args.reply,
     )
     server.mainloop();
-
-    sms_handler.join()
 
     return 0
 

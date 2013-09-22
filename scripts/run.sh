@@ -3,21 +3,20 @@
 set -o errexit
 set -o nounset
 
-REPO=$(realpath "$(dirname "$(realpath -- "${BASH_SOURCE[0]}")")/..")
-cd -- "${REPO}"
+repo=$(realpath "$(dirname "$(realpath -- "${BASH_SOURCE[0]}")")/..")
+cd -- "${repo}"
 
 set +o nounset
 source env3/bin/activate
 set -o nounset
 
-export PYTHONPATH="${PYTHONPATH-}:${REPO}/build"
+export PYTHONPATH="${PYTHONPATH-}:${repo}/src"
 
 if [[ $# == 0 ]]; then
     args=(
         --bpm 90
         --host "$(hostname -i)"
-        --log-level debug
-        --output build/website
+        --output build
         phonemes.pkl
         backing_tracks/default.wav
         melodies/default.txt
