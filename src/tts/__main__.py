@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from argparse import ArgumentParser
 from collections import OrderedDict
 import pickle
@@ -12,6 +10,7 @@ import threading
 from cherrypy.process import plugins
 import cherrypy
 
+from tts.config import Configuration
 from tts.melody import parse_melody
 from tts.sms.worker import SmsHandler
 from tts.sms.server import SmsServer
@@ -39,6 +38,7 @@ class SmsHandlerPlugin(plugins.SimplePlugin):
 def build_argument_parser():
     parser = ArgumentParser()
     parser.add_argument('-b', '--bpm', default=120, type=float, help='rap BPM')
+    parser.add_argument('-c', '--config')
     parser.add_argument('-d', '--dummy', action='store_true', default=False,
                         help='do not render any audio')
     parser.add_argument('-H', '--host', help='host to bind to')
@@ -59,6 +59,8 @@ def main(argv=None):
     if argv is None:
         argv = sys.argv
     args = build_argument_parser().parse_args(args=argv[1:])
+
+    config = Configuration(args.config)
 
     SmsHandler.dictionary_path = args.words
     SmsHandler.play_path = shutil.which('play')
@@ -92,9 +94,9 @@ def main(argv=None):
         incoming_sms,
         host=args.host,
         port=args.port,
-        reply=args.reply,
+        replies=config.replies,
     )
-    server.mainloop();
+    server.serve();
 
     return 0
 

@@ -1,14 +1,14 @@
 import functools
-import logging
 import multiprocessing
 import os
 import queue
 import subprocess
 import time
 
-from tts.constants import REST
+import cherrypy
 
-logger = logging.getLogger(__name__)
+from tts.constants import REST
+from tts.dictionary import Dictionary
 
 
 class SmsHandler:
@@ -36,74 +36,54 @@ class SmsHandler:
 
     def run(self):
         self._real_words = set()
-
         if self.dictionary_path is not None:
-            with open(self.dictionary_path) as f:
-                for w in f:
-                    w = w.strip()
-                    if w.isalpha():
-                        self._real_words.add(w.lower())
+            self._real_words = Dictionary.from_path(self.dictionary_path)
 
-
-        number_of_syllables = self._get_number_of_syllables()
-        number_of_notes = self._get_number_of_notes()
-        self._update_counter_page(number_of_syllables, number_of_notes)
+        num_syllables = self._get_number_of_syllables()
+        num_notes = self._get_number_of_notes()
+        self._update_counter_page(num_syllables, num_notes)
         while not self._stop_event.is_set():
             try:
                 msg = self._sms_queue.get_nowait()
             except queue.Empty:
                 time.sleep(0.1)
                 continue
+            msg_id = msg.id
             number = msg.number
             message = msg.message
-            if number == 'admin':
-                if message == 'compile':
-                    self._compile_rap(msg_id)
-                elif message == 'rap' and self._rap_path:
-                    subprocess.check_call((self.play_path, '-q',
-                        self._rap_path))
-                elif message == 'speech':
-                    self._rap_mode = False
-            elif not self._rap_mode:
-                self.render_speech(message)
-                number_of_syllables = self._get_number_of_syllables()
-                number_of_notes = self._get_number_of_notes()
-                self._update_counter_page(number_of_syllables,
-                                          number_of_notes)
-                if number_of_syllables >= number_of_notes:
-                    self._compile_rap(msg_id)
-
+            self.render_speech(message)
+            num_syllables = self._get_number_of_syllables()
+            num_notes = self._get_number_of_notes()
+            self._update_counter_page(num_syllables, num_notes)
+            if num_syllables >= num_notes:
+                self._compile_rap(msg_id)
             self._sms_queue.task_done()
 
     def _compile_rap(self, msg_id):
-        logger.info('Entering rap mode, compiling rap.')
+        cherrypy.log('Entering rap mode, compiling rap')
         self._rap_mode = True
         self._rap_path = self.render_rap(msg_id, self._speech)
-        logger.info('Rap compilied.')
+        cherrypy.log('Rap compilied')
 
-    def _update_counter_page(self, number_of_syllables, number_of_notes):
-        logger.info('%d/%d syllables sent so far', number_of_syllables,
-                number_of_notes)
-        self._webpage_writer.write_counter_page(number_of_syllables,
-                number_of_notes)
+    def _update_counter_page(self, num_syllables, num_notes):
+        cherrypy.log('%d/%d syllables sent so far'
+                     % (num_syllables, num_notes))
+        self._webpage_writer.write_counter_page(num_syllables, num_notes)
 
     def _get_number_of_notes(self):
         return sum(1 for pitch, beats in self._melody if pitch != REST)
 
     def _get_number_of_syllables(self):
         lexicon, translate = self._syllables.build_lexicon(set(self._speech))
-        number_of_syllables = 0
+        num_syllables = 0
         for word in self._speech:
             if word in translate:
-                number_of_syllables += len(translate[word])
+                num_syllables += len(translate[word])
             else:
-                number_of_syllables += 1
-        return number_of_syllables
+                num_syllables += 1
+        return num_syllables
 
     def render_speech(self, message):
-        if 'cake' in message:
-            message = 'To who ever tried to make me say a Portal reference ' \
-                'think of some thing better'
         words = self.clean_message(message)
         if words:
             self._speech.extend(words)
@@ -130,8 +110,8 @@ class SmsHandler:
                 trans_words.append(word)
         words = trans_words
 
-        logger.debug(words)
-        logger.debug(word_gaps)
+        cherrypy.log(str(words))
+        cherrypy.log(str(word_gaps))
 
         # Make the length of words fit the melody
         notes = self._get_number_of_notes()
@@ -213,7 +193,7 @@ class SmsHandler:
             + ['remix',
                 ','.join(str(channel) for channel in range(1, word_count + 2)),
                 'norm']
-        logger.debug(' '.join(sox_args))
+        cherrypy.log(' '.join(sox_args))
         if not self._dummy:
             subprocess.check_call(sox_args)
 

@@ -15,8 +15,10 @@ export PYTHONPATH="${PYTHONPATH-}:${repo}/src"
 if [[ $# == 0 ]]; then
     args=(
         --bpm 90
+        --config "${repo}/config.yaml"
         --host "$(hostname -i)"
         --output build
+        --words /usr/share/dict/cracklib-small
         phonemes.pkl
         backing_tracks/default.wav
         melodies/default.txt
