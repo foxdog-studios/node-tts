@@ -1,9 +1,3 @@
 *.pyc
-/backing_tracks/*.wav
-/bower_components/
-/build/
-/env2/
-/env3/
-/node_modules/
-/phonemes.pkl
-
+/env/
+/local/

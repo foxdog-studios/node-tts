@@ -1,0 +1,23 @@
+<head>
+  <title>TTS</title>
+</head>
+
+<body>
+  {{> tts}}
+</body>
+
+<template name="tts">
+  <h1>TTS</h1>
+  <h2>Rap</h2>
+    <ul>
+      <li>Current words: {{currentWords}}</li>
+      <li>Total words: {{rap.numWords}}</li>
+    </ul>
+  <h2>SMS</h2>
+  <ul>
+    {{#each sms}}
+      <li>{{number}}: {{message}}</li>
+    {{/each}}
+  </ul>
+</template>
+
