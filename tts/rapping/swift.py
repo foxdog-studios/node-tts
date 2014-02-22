@@ -96,8 +96,6 @@ class Swift(object):
         #
 
         def write(b):
-            if isinstance(b, str):
-                b = bytes(b, 'ascii')
             wave_file.write(b)
 
         def pack(fmt, *values):

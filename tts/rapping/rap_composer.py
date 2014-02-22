@@ -29,7 +29,7 @@ class RapComposer(object):
     def has_enough_words(self):
         return len(self._words) == len(self._melody)
 
-    def render(self):
+    def compose(self):
         assert self.has_enough_words()
 
         delays = []
