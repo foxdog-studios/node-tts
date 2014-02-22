@@ -45,7 +45,7 @@ function install_global_node_packages()
 
 function install_meteorite_packages()
 {(
-    cd $repo/meteor
+    cd $repo/dino
     mrt install
 )}
 
