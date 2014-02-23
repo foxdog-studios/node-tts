@@ -1,14 +1,16 @@
 <template name="powerUp">
-  <div class="power">
+  <div class="power {{#unless canTextIn}}full-width{{/unless}}">
       <div>
           <img class="power-image" src="{{imageSrc}}" width="{{imageWidth}}%"/>
       </div>
   </div>
+  {{#if canTextIn}}
   <div class="number">
       <h1>Feed your Texts to</h1>
       {{#each phoneNumberLines}}
         <div class="word">{{this}}</div>
       {{/each}}
   </div>
+  {{/if}}
 </template>
 

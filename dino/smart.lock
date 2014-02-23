@@ -1,7 +1,18 @@
 {
   "meteor": {},
   "dependencies": {
-    "basePackages": {},
-    "packages": {}
+    "basePackages": {
+      "audiocontext-monkeypatch": {
+        "git": "https://github.com/foxdog-studios/meteor-AudioContext-MonkeyPatch",
+        "branch": "master"
+      }
+    },
+    "packages": {
+      "audiocontext-monkeypatch": {
+        "git": "https://github.com/foxdog-studios/meteor-AudioContext-MonkeyPatch",
+        "branch": "master",
+        "commit": "eb0e84a52ca076781afebdb1659f77411565cf8e"
+      }
+    }
   }
 }
