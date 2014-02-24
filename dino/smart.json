@@ -1,3 +1,7 @@
 {
-  "packages": {}
+  "packages": {
+    "audiocontext-monkeypatch": {
+      "git": "https://github.com/foxdog-studios/meteor-AudioContext-MonkeyPatch"
+    }
+  }
 }
