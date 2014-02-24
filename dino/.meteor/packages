@@ -7,3 +7,4 @@ standard-app-packages
 coffeescript
 less
 audiocontext-monkeypatch
+iron-router

@@ -1,3 +1,3 @@
-for name in ['raps', 'sms']
-  Meteor.subscribe name
+Meteor.subscribe 'raps'
+Meteor.subscribe 'sms'
 

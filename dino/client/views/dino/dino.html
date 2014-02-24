@@ -1,0 +1,28 @@
+<template name="dinoPen">
+  {{#if hasRap}}
+    {{> dinoRapping}}
+  {{else}}
+    {{> dinoGrowing dino}}
+    {{> dinoInfo}}
+  {{/if}}
+</template>
+
+<template name="dinoGrowing">
+  <div class="dino">
+    <img src="{{image}}">
+  </div>
+</template>
+
+<template name="dinoInfo">
+  <div class="number">
+    <h1>Feed your Texts to</h1>
+    {{#each phoneNumberLines}}
+      <div class="word">{{this}}</div>
+    {{/each}}
+  </div>
+</template>
+
+<template name="dinoRapping">
+  <h1>Rapping</h1>
+</template>
+

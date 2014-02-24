@@ -5,13 +5,19 @@
       "audiocontext-monkeypatch": {
         "git": "https://github.com/foxdog-studios/meteor-AudioContext-MonkeyPatch",
         "branch": "master"
-      }
+      },
+      "iron-router": {}
     },
     "packages": {
       "audiocontext-monkeypatch": {
         "git": "https://github.com/foxdog-studios/meteor-AudioContext-MonkeyPatch",
         "branch": "master",
         "commit": "eb0e84a52ca076781afebdb1659f77411565cf8e"
+      },
+      "iron-router": {
+        "git": "https://github.com/EventedMind/iron-router.git",
+        "tag": "v0.6.4",
+        "commit": "927bbaed1b87894fb6fb70807f74ff3a5bd89f29"
       }
     }
   }
