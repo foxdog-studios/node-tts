@@ -17,6 +17,16 @@ class AudioSample
     @_source.start 0
     true
 
-@createAudioSample = (ctx, uri, autoplay) ->
-  new AudioSample ctx, uri, autoplay
+class Sfx
+  constructor: ->
+    ctx = new AudioContext
+    create = (name) -> new AudioSample ctx, "/#{ name }.ogg"
+
+    @baby     = create 'baby'
+    @fat      = create 'teenager'
+    @melting  = create 'fat'
+    @teenager = create 'kid'
+    @final    = create 'final_form'
+
+@SFX = new Sfx
 

@@ -2,20 +2,18 @@ audioCtx = new AudioContext
 
 DINO_SCHEMA =
   baby:
-    sound: createAudioSample audioCtx, '/baby.ogg'
+    sound: SFX.baby
     image: '/dino.gif'
   fat:
-    sound: createAudioSample audioCtx, '/teenager.ogg'
+    sound: SFX.fat
     image: '/fatterdino.gif'
   teenager:
-    sound: createAudioSample audioCtx, '/kid.ogg'
+    sound: SFX.teenager
     image: '/teenagedino.gif'
-  melting:
-    sound: createAudioSample audioCtx, '/fat.ogg'
-    image: '/meltingdino.gif'
-    loop: true
 
 Template.dinoPen.helpers
+  hasEnoughWords: -> getProgress() >= 100
+
   hasRap: -> Raps.findOne()?.rap?
 
   dino: ->
@@ -29,24 +27,13 @@ Template.dinoPen.helpers
 
 getProgress = ->
   rap = Raps.findOne()
-  return 0 if not rap? or rap?.numWords == 0
-  console.log getCurrentWordCount()
+  if not rap? or rap?.numWords == 0
+    return 0
   (getCurrentWordCount() / rap.numWords) * 100
 
 getCurrentWordCount = ->
   count = 0
   Sms.find({}).forEach (sms) ->
-    console.log sms
     count += sms.message.split(' ').length
   count
-
-Template.dinoGrowing.rendered = ->
-  @data.sound.tryPlay()
-
-Template.dinoInfo.helpers
-  phoneNumberLines: [
-    Meteor.settings.public.phoneNumberLine1
-    Meteor.settings.public.phoneNumberLine2
-    Meteor.settings.public.phoneNumberLine3
-  ]
 

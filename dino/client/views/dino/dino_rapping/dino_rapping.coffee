@@ -1,18 +1,20 @@
 KEY_CODE_ESCAPE = 27
 
 Template.dinoRapping.created = ->
-  createAudioSample new AudioContext(), 'final_form.ogg', true
+  SFX.final.tryPlay()
 
 Template.dinoRapping.rendered = ->
   return if @alreadyRendered
   @alreadyRendered = true
 
   pop = Popcorn('#rap-audio')
+  overlay = $('.overlay')
 
   $(window).keyup (event) ->
     switch event.keyCode
       when KEY_CODE_ESCAPE
         pop.play()
+        overlay.toggle()
 
 Template.dinoRapping.helpers
   audioSrc: ->
