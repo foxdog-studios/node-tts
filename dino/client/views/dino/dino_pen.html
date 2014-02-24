@@ -1,0 +1,9 @@
+<template name="dinoPen">
+  {{#if hasRap}}
+    {{> dinoRapping}}
+  {{else}}
+    {{> dinoGrowing dino}}
+    {{> dinoInfo}}
+  {{/if}}
+</template>
+

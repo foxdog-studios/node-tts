@@ -36,17 +36,6 @@ getProgress = ->
 getCurrentWordCount = ->
   count = 0
   Sms.find({}).forEach (sms) ->
-    console.log sms
     count += sms.message.split(' ').length
   count
-
-Template.dinoGrowing.rendered = ->
-  @data.sound.tryPlay()
-
-Template.dinoInfo.helpers
-  phoneNumberLines: [
-    Meteor.settings.public.phoneNumberLine1
-    Meteor.settings.public.phoneNumberLine2
-    Meteor.settings.public.phoneNumberLine3
-  ]
 
