@@ -1,8 +1,11 @@
 Meteor.methods
-  'addRap': (rap) ->
+  'addRap': (rap, lyrics) ->
     check rap, String
     id = Raps.findOne()._id
-    Raps.update id, $set: rap: rap
+    Raps.update id,
+      $set:
+        lryics: lyrics
+        rap: rap
     return
 
   'addSms': (number, message) ->
