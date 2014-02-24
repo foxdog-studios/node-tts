@@ -78,8 +78,8 @@ class RapComposer(object):
         print('Rendering')
         rap_path = self._rap_renderer.render()
         print('Sending to dino')
-        self._dino_client.add_rap(rap_path)
-
+        timed_words = self._rap_renderer.get_timed_words()
+        self._dino_client.add_rap(rap_path, timed_words)
 
     def add_lryics(self, sms):
         with self._new_sms:

@@ -26,6 +26,9 @@ class RapRenderer(object):
             words = words[:-excess]
         self._words.extend(words)
 
+    def get_timed_words(self):
+        return zip(self._words, self._melody)
+
     def has_enough_words(self):
         return len(self._words) == len(self._melody)
 
@@ -34,7 +37,7 @@ class RapRenderer(object):
 
         delays = []
         dir_path = tempfile.mkdtemp(prefix='tts-')
-        iterable = enumerate(zip(self._words, self._melody))
+        iterable = enumerate(self.get_timed_words())
         word_paths = []
 
         for i, (word, (pitch, start)) in iterable:
