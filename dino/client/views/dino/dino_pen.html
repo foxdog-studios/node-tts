@@ -2,8 +2,12 @@
   {{#if hasRap}}
     {{> dinoRapping}}
   {{else}}
-    {{> dinoGrowing dino}}
-    {{> dinoInfo}}
+    {{#if hasEnoughWords}}
+      {{> dinoEating}}
+    {{else}}
+      {{> dinoGrowing dino}}
+      {{> dinoInfo}}
+    {{/if}}
   {{/if}}
 </template>
 
