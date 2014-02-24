@@ -10,16 +10,22 @@ import cherrypy
 
 from tts.sms import Sms
 
+__all__ = ['start']
+
 
 class Server(object):
-    def __init__(self, handler):
-        self._handler = handler
+    def __init__(self, rap_composer, reply_composer):
+        self._rap_composer = rap_composer
+        self._reply_composer = reply_composer
+
+    def _add_lryics(self, sms):
+        self._rap_composer.add_lryics(sms)
 
     def _build_sms(self, number, message):
         return Sms(number, message)
 
-    def _handle(self, sms):
-        return self._handler.handle(sms)
+    def _compose_reply(self, sms):
+        return self._reply_composer.compose(sms)
 
     def _log(self, template, *format_args, **format_kwargs):
         cherrypy.log(
@@ -29,18 +35,15 @@ class Server(object):
         )
 
     def _log_reply(self, reply):
-        for sms in reply:
-            self._log('Sending "{message}" to {number}', message=sms.message,
-                      number=sms.number)
+        self._log('Sending "{message}" to {number}', message=reply.message,
+                  number=reply.number)
 
     def _log_sms(self, sms):
         self._log('Recieved "{message}" from {number}', message=sms.message,
                   number=sms.number)
 
-    def _to_serializable(self, reply):
-        def serialisable_sms(sms):
-            return {'number': sms.number, 'message': sms.message}
-        return [serialisable_sms(sms) for sms in reply]
+    def _make_pod_reply(self, reply):
+        return {'number': reply.number, 'message': reply.message}
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -52,7 +55,18 @@ class Server(object):
             )
         sms = self._build_sms(number, message)
         self._log_sms(sms)
-        reply = self._handle(sms)
+        self._add_lryics(sms)
+        reply = self._compose_reply(sms)
         self._log_reply(reply)
-        return self._to_serializable(reply)
+        return self._make_pod_reply(reply)
+
+
+def start(config, rap_composer, reply_composer):
+    cherrypy.engine.autoreload.files.add(config.path)
+    cherrypy.config.update({
+        'server.socket_host': config.tts_host,
+        'server.socket_port': config.tts_port,
+    })
+    root = Server(rap_composer, reply_composer)
+    cherrypy.quickstart(root=root, script_name='', config={'/': {}})
 

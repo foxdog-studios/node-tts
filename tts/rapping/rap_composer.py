@@ -12,7 +12,7 @@ import tempfile
 from tts.rapping.constants import X_LOW
 
 
-class RapComposer(object):
+class RapRenderer(object):
     def __init__(self, tts, melody, backing_track):
         self._backing_track = backing_track
         self._melody = melody
@@ -29,7 +29,7 @@ class RapComposer(object):
     def has_enough_words(self):
         return len(self._words) == len(self._melody)
 
-    def compose(self):
+    def render(self):
         assert self.has_enough_words()
 
         delays = []
@@ -55,4 +55,6 @@ class RapComposer(object):
             + ['remix', channels, 'norm']
         )
         subprocess.check_call(args)
+
+        return rap_path
 

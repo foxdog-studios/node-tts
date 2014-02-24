@@ -132,7 +132,7 @@ for task in $@; do
 done
 
 for task in ${@:-$tasks}; do
-    echo -e "\e[5;32mTask: $task\e[0m\n"
+    echo -e "\e[32mTask: $task\e[0m\n"
     $task
 done
 

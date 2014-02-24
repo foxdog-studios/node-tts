@@ -5,89 +5,43 @@ from __future__ import division
 from __future__ import print_function
 
 from argparse import ArgumentParser
-from collections import OrderedDict
-import logging
-import os
 import sys
 
 import cherrypy
 
-from tts.conf import Configuration
+from tts import server
+from tts.config import Configuration
 from tts.dino_client import DinoClient
-from tts.handlers import (
-    Cleaner,
-    DinoForwarder,
-    NullHandler,
-    PipelineHandler,
-    Rapper,
-    ReplyComposer,
-)
-from tts.server import Server
 from tts.rapping.melody import Melody
-from tts.rapping.rap_composer import RapComposer
+from tts.rap_composer import RapComposer
+from tts.reply_composer import ReplyComposer
+from tts.handlers.cleaner import Cleaner
 from tts.rapping.text_to_speech import TextToSpeech
+from tts.rapping.rap_composer import RapRenderer
+
+
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+    args = build_argument_parser().parse_args(args=argv[1:])
+    config = Configuration(path=args.config)
+    melody = Melody.parse_melody(config.bpm, config.melody)
+    dino_client = DinoClient('127.0.0.1:3000')
+    dino_client.connect()
+    dino_client.reset(len(melody))
+    cleaner = Cleaner.from_path(config.dictionary)
+    tts = TextToSpeech()
+    rap_renderer = RapRenderer(tts, melody, config.backing_track)
+    reply_composer = ReplyComposer(config.replies)
+    with RapComposer(dino_client, cleaner, rap_renderer) as rap_composer:
+        server.start(config, rap_composer, reply_composer)
+    dino_client.disconnect()
 
 
 def build_argument_parser():
     parser = ArgumentParser()
-    parser.add_argument('-c', '--conf', help='path to YAML configuration file')
+    parser.add_argument('config', help='path to YAML configuration file')
     return parser
-
-
-def main(argv=None):
-    global logger
-
-    if argv is None:
-        argv = sys.argv
-    args = build_argument_parser().parse_args(args=argv[1:])
-
-    conf = Configuration(path=args.conf)
-
-    # If configuration was loaded from a file, reload if that file
-    # changes
-    if conf.path is not None:
-        cherrypy.engine.autoreload.files.add(conf.path)
-
-    melody = Melody.parse_melody(conf.bpm, conf.melody)
-
-    # Build the handler pipeline
-    handlers = []
-    if conf.handlers_cleaner:
-        handlers.append(Cleaner.from_path(conf.handlers_cleaner))
-
-    vis_client = None
-    if conf.handlers_vis_host:
-        dino_client = DinoClient(conf.handlers_vis_host)
-        dino_client.connect()
-        dino_client.reset(len(melody))
-        dino_forwarder = DinoForwarder(dino_client)
-        handlers.append(dino_forwarder)
-
-    if conf.handlers_rapper:
-        tts = TextToSpeech()
-        backing_track = conf.handlers_rapper
-        rap_composer = RapComposer(tts, melody, backing_track)
-        handlers.append(Rapper(rap_composer))
-
-    if conf.handlers_reply_composer:
-        handlers.append(ReplyComposer(conf.replies))
-
-    if not handlers:
-        handlers.append(NullHandler())
-
-    root = Server(PipelineHandler(handlers))
-
-    # Configure and stary the CherryPy engine
-    cherrypy.config.update({
-        'server.socket_host': conf.server_host,
-        'server.socket_port': conf.server_port,
-    })
-    cherrypy.quickstart(root=root, script_name='', config={'/': {}})
-
-    if dino_client is not None:
-        dino_client.disconnect()
-
-    return 0
 
 
 if __name__ == '__main__':

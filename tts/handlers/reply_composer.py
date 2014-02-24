@@ -15,8 +15,8 @@ class ReplyComposer(object):
             raise ValueError('at least one reply must be given')
         self._replies = cycle(replies)
 
-    def handle(self, sms):
+    def compose(self, sms):
         number = sms.number
         message = next(self._replies)
-        return [SmsReply(number, message, sms)]
+        return SmsReply(number, message, sms)
 

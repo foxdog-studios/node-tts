@@ -4,6 +4,12 @@ Meteor.methods
       Sms.insert
         number: number
         message: message
+    return
+
+  'addRap': (rap) ->
+    id = Raps.findOne()._id
+    Raps.update id, $set: rap: rap
+    return
 
   'reset': (numWords) ->
     if _.isNumber numWords
@@ -11,4 +17,5 @@ Meteor.methods
       Raps.remove {}
       Raps.insert
         numWords: numWords
+    return
 
