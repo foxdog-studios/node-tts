@@ -8,10 +8,6 @@ body {
   right: 50%;
   bottom: 0%;
   left: 0%;
-
-  img {
-    width: 75%;
-  }
 }
 
 .info {
@@ -63,6 +59,11 @@ body {
     height: 100%;
     z-index: -1;
   }
+
+  .text {
+    z-index: 1;
+  }
+
   img {
     position: absolute;
     left: 0%;
@@ -71,5 +72,22 @@ body {
     height: 100%;
     z-index: -2;
   }
+
+  .word {
+    color: grey;
+    font-size: 190px;
+    font-family: monospace;
+    text-align: center;
+    text-transform: uppercase;
+    display: block;
+    -webkit-text-stroke-width: 5px;
+    -webkit-text-stroke-color: black;
+  }
+
+  .word.selected {
+     color: white;
+     font-weight: bold;
+  }
+
 }
 

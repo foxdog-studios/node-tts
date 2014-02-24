@@ -4,7 +4,7 @@ Meteor.methods
     id = Raps.findOne()._id
     Raps.update id,
       $set:
-        lryics: lyrics
+        lyrics: lyrics
         rap: rap
     return
 
