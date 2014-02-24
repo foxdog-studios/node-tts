@@ -6,7 +6,8 @@
         "git": "https://github.com/foxdog-studios/meteor-AudioContext-MonkeyPatch",
         "branch": "master"
       },
-      "iron-router": {}
+      "iron-router": {},
+      "popcorn": {}
     },
     "packages": {
       "audiocontext-monkeypatch": {
@@ -18,6 +19,11 @@
         "git": "https://github.com/EventedMind/iron-router.git",
         "tag": "v0.6.4",
         "commit": "927bbaed1b87894fb6fb70807f74ff3a5bd89f29"
+      },
+      "popcorn": {
+        "git": "https://github.com/santihbc/meteor-popcorn-js.git",
+        "tag": "v0.1.0",
+        "commit": "20c5e438f0d1634f7c2ca3b0f78ac0bf63cb2e7c"
       }
     }
   }

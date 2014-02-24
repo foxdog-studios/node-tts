@@ -8,3 +8,4 @@ coffeescript
 less
 audiocontext-monkeypatch
 iron-router
+popcorn

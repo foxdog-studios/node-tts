@@ -1,11 +1,12 @@
 class AudioSample
-  constructor: (@_ctx, uri) ->
+  constructor: (@_ctx, uri, @_autoplay) ->
     request = new XMLHttpRequest
     request.open 'GET', uri, true
     request.responseType = 'arraybuffer'
     request.onload = =>
       @_ctx.decodeAudioData request.response, (buffer) =>
         @_buffer = buffer
+        @tryPlay() if @_autoplay
     request.send()
 
   tryPlay: ->
@@ -16,6 +17,6 @@ class AudioSample
     @_source.start 0
     true
 
-@createAudioSample = (ctx, uri) ->
-  new AudioSample ctx, uri
+@createAudioSample = (ctx, uri, autoplay) ->
+  new AudioSample ctx, uri, autoplay
 

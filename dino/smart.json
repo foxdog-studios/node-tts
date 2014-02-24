@@ -3,6 +3,7 @@
     "audiocontext-monkeypatch": {
       "git": "https://github.com/foxdog-studios/meteor-AudioContext-MonkeyPatch"
     },
-    "iron-router": {}
+    "iron-router": {},
+    "popcorn": {}
   }
 }
