@@ -23,9 +23,11 @@ Template.dinoPen.helpers
       when progress <  66 then 'teenager'
       when progress < 100 then 'fat'
       else 'melting'
-    DINO_SCHEMA[name]
+    dino = DINO_SCHEMA[name]
+    dino.progress = progress
+    dino
 
-getProgress = ->
+@getProgress = ->
   rap = Raps.findOne()
   if not rap? or rap?.numWords == 0
     return 0

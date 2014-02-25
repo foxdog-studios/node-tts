@@ -29,12 +29,6 @@ class Melody(object):
             if not match:
                 raise ValueError('invalid note %r' % (note,))
 
-            # Pitch
-            pitch = match.group(1)
-            if pitch == 'r':
-                continue
-            pitch = getattr(constants, pitch[0].upper() + pitch[1:])
-
             # Duration
             def get_int(group):
                 i = match.group(group)
@@ -42,12 +36,15 @@ class Melody(object):
             n = get_int(2)
             d = get_int(3)
             beats = n / d
+            duration = beats * spb
 
             # Note
-            note = Note(pitch, start)
-            notes.append(note)
+            pitch = match.group(1)
+            if pitch != 'r':
+                pitch = getattr(constants, pitch[0].upper() + pitch[1:])
+                note = Note(pitch, start)
+                notes.append(note)
 
-            duration = beats * spb
             start += duration
 
         return notes
