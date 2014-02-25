@@ -11,11 +11,11 @@ setopt no_unset
 function usage()
 {
     cat <<-'EOF'
-		Build the Meteorite application.
+		Build dino
 
 		Usage:
 
-			mrt-bundle.zsh
+			$ dino-build.zsh
 	EOF
     exit 1
 }
@@ -47,7 +47,7 @@ mkdir --parents $build_dir
 cd $build_dir
 
 # Create bundle
-$repo/scripts/mrt.zsh bundle $bundle_archive
+$repo/scripts/dino.zsh bundle $bundle_archive
 
 # Unbundle
 tar --extract --file $bundle_archive
