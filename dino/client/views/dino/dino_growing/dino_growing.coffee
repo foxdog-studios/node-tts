@@ -1,5 +1,6 @@
 Template.dinoGrowing.rendered = ->
-  @data.sound.start()
+  if getProgress() > 0
+    @data.sound.start()
 
 Template.dinoGrowing.destroyed = ->
   @data.sound.stop()
