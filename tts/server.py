@@ -43,7 +43,7 @@ class Server(object):
                   number=sms.number)
 
     def _make_pod_reply(self, reply):
-        return {'number': reply.number, 'message': reply.message}
+        return [{'number': reply.number, 'message': reply.message}]
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
