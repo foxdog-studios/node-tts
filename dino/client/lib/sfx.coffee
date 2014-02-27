@@ -1,30 +1,57 @@
 class AudioSample
-  constructor: (@_ctx, uri, @_autoplay) ->
+  constructor: (ctx, uri, options) ->
+    options = _.defaults (options or {}),
+      loop: false
+
+    @_autostart = false
+    @_ctx = ctx
+    @_loop = options.loop
+    @_ready = false
+
     request = new XMLHttpRequest
     request.open 'GET', uri, true
     request.responseType = 'arraybuffer'
-    request.onload = =>
-      @_ctx.decodeAudioData request.response, (buffer) =>
-        @_buffer = buffer
-        @tryPlay() if @_autoplay
+
+    callback = (buffer) => @_setBuffer buffer
+    request.onload = ->
+      ctx.decodeAudioData request.response, callback
+
     request.send()
 
-  tryPlay: ->
-    return false unless @_buffer?
-    @_source = @_ctx.createBufferSource()
-    @_source.buffer = @_buffer
-    @_source.connect @_ctx.destination
-    @_source.start 0
-    true
+  _setBuffer: (buffer) ->
+    @_buffer = buffer
+    @_ready = true
+    @start() if @_autostart
+
+  start: ->
+    if @_ready
+      @_source.stop if @_source?
+      @_source = @_ctx.createBufferSource()
+      @_source.buffer = @_buffer
+      @_source.connect @_ctx.destination
+      @_source.loop = @_loop
+      @_source.start 0
+      @_autostart = false
+    else
+      @_autostart = true
+
+  stop: ->
+    return unless @_source?
+    @_source.stop()
+    @_autostart = false
+    delete @_source
+
 
 class Sfx
   constructor: ->
     ctx = new AudioContext
-    create = (name) -> new AudioSample ctx, "/#{ name }.ogg"
+
+    create = (name, options) ->
+      new AudioSample ctx, "/#{ name }.ogg", options
 
     @baby     = create 'baby'
     @fat      = create 'teenager'
-    @melting  = create 'fat'
+    @melting  = create 'fat', loop: true
     @teenager = create 'kid'
     @final    = create 'final_form'
 

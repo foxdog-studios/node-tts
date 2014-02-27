@@ -1,3 +1,5 @@
 Template.dinoEating.rendered = ->
-  SFX.melting.tryPlay()
+  SFX.melting.start()
 
+Template.dinoEating.destroyed = ->
+  SFX.melting.stop()

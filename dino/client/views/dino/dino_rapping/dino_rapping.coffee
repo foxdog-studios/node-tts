@@ -3,7 +3,7 @@ KEY_CODE_ESCAPE = 27
 CHUNK_SIZE = 3
 
 Template.dinoRapping.created = ->
-  SFX.final.tryPlay()
+  SFX.final.start()
 
 Template.dinoRapping.rendered = ->
   return if @alreadyRendered
