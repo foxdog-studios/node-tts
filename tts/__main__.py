@@ -16,7 +16,6 @@ from tts.rapping.melody import Melody
 from tts.rap_composer import RapComposer
 from tts.reply_composer import ReplyComposer
 from tts.handlers.cleaner import Cleaner
-from tts.rapping.text_to_speech import TextToSpeech
 from tts.rapping.rap_composer import RapRenderer
 
 
@@ -30,8 +29,7 @@ def main(argv=None):
     dino_client.connect()
     dino_client.reset(len(melody))
     cleaner = Cleaner.from_path(config.dictionary)
-    tts = TextToSpeech()
-    rap_renderer = RapRenderer(tts, melody, config.backing_track)
+    rap_renderer = RapRenderer(melody, config.backing_track)
     reply_composer = ReplyComposer(config.replies)
     with RapComposer(dino_client, cleaner, rap_renderer) as rap_composer:
         server.start(config, rap_composer, reply_composer)

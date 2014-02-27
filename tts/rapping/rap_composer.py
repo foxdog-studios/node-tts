@@ -4,20 +4,21 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import multiprocessing
 import os
 import shutil
 import subprocess
 import tempfile
 
 from tts.rapping.constants import X_LOW
+from tts.rapping.text_to_speech import TextToSpeech
 
 
 class RapRenderer(object):
-    def __init__(self, tts, melody, backing_track):
+    def __init__(self, melody, backing_track):
         self._backing_track = backing_track
         self._melody = melody
         self._sox_path = '/usr/bin/sox'
-        self._tts = tts
         self._words = []
 
     def add_words(self, words):
@@ -40,12 +41,16 @@ class RapRenderer(object):
         iterable = enumerate(self.get_timed_words())
         word_paths = []
 
+        pool = multiprocessing.Pool(multiprocessing.cpu_count() * 3)
+
         for i, (word, (pitch, start)) in iterable:
             delays.append(start)
             wave_path = os.path.join(dir_path, '%s.wav' % (i,))
             word_paths.append(wave_path)
-            with open(wave_path, 'wb') as wave_file:
-                self._tts.tts(wave_file, word, pitch=pitch, pitch_range=X_LOW)
+            pool.apply_async(_tts, (wave_path, word, pitch))
+
+        pool.close()
+        pool.join()
 
         rap_path = os.path.join(dir_path, 'rap.wav')
         channels = ','.join(str(channel)
@@ -60,4 +65,11 @@ class RapRenderer(object):
         subprocess.check_call(args)
 
         return rap_path
+
+
+def _tts(wave_path, word, pitch):
+    tts = TextToSpeech()
+    print
+    with open(wave_path, 'wb') as wave_file:
+        tts.tts(wave_file, word, pitch=pitch, pitch_range=X_LOW)
 
