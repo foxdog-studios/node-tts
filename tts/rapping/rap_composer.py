@@ -56,9 +56,17 @@ class RapRenderer(object):
         channels = ','.join(str(channel)
                             for channel in range(1, len(self._words) + 2))
         args = (
-              [self._sox_path, '-M']
+            [
+                self._sox_path,
+                '--combine', 'merge',
+            ]
             + word_paths
-            + [self._backing_track, rap_path, 'delay']
+            + [
+                '--volume', '2',
+                self._backing_track,
+                rap_path,
+                'delay'
+            ]
             + [str(delay) for delay in delays]
             + ['remix', channels, 'norm']
         )
