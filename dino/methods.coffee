@@ -8,10 +8,10 @@ Meteor.methods
         rap: rap
     return
 
-  'addSms': (number, message) ->
+  'addSms': (number, words) ->
     check number, String
-    check message, String
-    Sms.insert number: number, message: message
+    check words, [String]
+    Sms.insert number: number, words: words
     return
 
   'reset': (numWords) ->

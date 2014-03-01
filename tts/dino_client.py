@@ -6,9 +6,12 @@ from __future__ import print_function
 
 from ddp.client import DdpClient
 
+from tts.handlers.cleaner import Cleaner
+
 
 class DinoClient(object):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, cleaner, *args, **kwargs):
+        self._cleaner = cleaner
         self._ddp = DdpClient(*args, **kwargs)
 
     def connect(self):
@@ -26,7 +29,8 @@ class DinoClient(object):
         self._ddp.method('addRap', [rap, lyrics])
 
     def add_sms(self, sms):
-        self._ddp.method('addSms', [sms.number, sms.message])
+        words = self._cleaner.clean(sms.message)
+        self._ddp.method('addSms', [sms.number, words])
 
     def reset(self, num_words):
         self._ddp.method('reset', [num_words])

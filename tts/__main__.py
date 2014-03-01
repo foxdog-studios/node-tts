@@ -25,10 +25,10 @@ def main(argv=None):
     args = build_argument_parser().parse_args(args=argv[1:])
     config = Configuration(path=args.config)
     melody = Melody.parse_melody(config.bpm, config.melody)
-    dino_client = DinoClient('127.0.0.1:3000')
+    cleaner = Cleaner.from_path(config.dictionary)
+    dino_client = DinoClient(cleaner, '127.0.0.1:3000')
     dino_client.connect()
     dino_client.reset(len(melody))
-    cleaner = Cleaner.from_path(config.dictionary)
     rap_renderer = RapRenderer(melody, config.backing_track)
     reply_composer = ReplyComposer(config.replies)
     with RapComposer(dino_client, cleaner, rap_renderer) as rap_composer:

@@ -36,6 +36,6 @@ Template.dinoPen.helpers
 getCurrentWordCount = ->
   count = 0
   Sms.find({}).forEach (sms) ->
-    count += sms.message.split(' ').length
+    count += sms.words.length
   count
 
