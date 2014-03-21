@@ -1,4 +1,4 @@
-# coding=utf-8
+# coding: utf-8
 
 from __future__ import absolute_import
 from __future__ import division
@@ -10,10 +10,11 @@ import shutil
 import struct
 import subprocess
 
-import cherrypy
-
 
 AUDIO_FORMAT_PCM = 1
+
+logger = logging.getLogger(__name__)
+
 
 class Swift(object):
     def __init__(self):
@@ -121,23 +122,23 @@ class Swift(object):
         pack('<I', subchunk_2_size) # Subchunk2Size (B)
         samples.tofile(wave_file)   # data
 
-        cherrypy.log(
-            '\n'.join([
-                'WAVE file metadata'                          ,
-                'ChunkID      : {chunk_id}'                   ,
-                'ChunkSize    : {chunk_size} B'               ,
-                'Format       : {format}'                     ,
-                'Subchunk1ID  : {subchunk_1_id}'              ,
-                'Subchunk1Size: {subchunk_1_size} B'          ,
-                'AudioFormat  : {audio_format}'               ,
-                'NumChannels  : {num_channels}'               ,
-                'SampleRate   : {sample_rate} Hz'             ,
-                'ByteRate     : {byte_rate} B s^-1'           ,
-                'BlockAlign   : {block_align} B sample^-1'    ,
-                'BitsPerSample: {bits_per_sample} b sample^-1',
-                'Subchunk2ID  : {subchunk_2_id}'              ,
-                'Subchunk2Size: {subchunk_2_size} B'          ,
-            ]).format(**locals()),
-            severity=logging.DEBUG,
-        )
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(
+                '\n'.join([
+                    'WAVE file metadata'                          ,
+                    'ChunkID      : {chunk_id}'                   ,
+                    'ChunkSize    : {chunk_size} B'               ,
+                    'Format       : {format}'                     ,
+                    'Subchunk1ID  : {subchunk_1_id}'              ,
+                    'Subchunk1Size: {subchunk_1_size} B'          ,
+                    'AudioFormat  : {audio_format}'               ,
+                    'NumChannels  : {num_channels}'               ,
+                    'SampleRate   : {sample_rate} Hz'             ,
+                    'ByteRate     : {byte_rate} B s^-1'           ,
+                    'BlockAlign   : {block_align} B sample^-1'    ,
+                    'BitsPerSample: {bits_per_sample} b sample^-1',
+                    'Subchunk2ID  : {subchunk_2_id}'              ,
+                    'Subchunk2Size: {subchunk_2_size} B'          ,
+                ]).format(**locals()),
+            )
 

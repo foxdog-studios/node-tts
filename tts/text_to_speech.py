@@ -1,4 +1,4 @@
-# coding=utf-8
+# coding: utf-8
 
 from __future__ import absolute_import
 from __future__ import division
@@ -6,7 +6,7 @@ from __future__ import print_function
 
 from xml.etree.ElementTree import Element, tostring
 
-from tts.rapping.swift import Swift
+from tts.swift import Swift
 
 
 class TextToSpeech(object):
