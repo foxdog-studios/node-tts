@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
-setopt err_exit
-setopt no_unset
+setopt ERR_EXIT
+setopt NO_UNSET
 
 
 # ==============================================================================
@@ -10,15 +10,10 @@ setopt no_unset
 
 repo=$(realpath -- ${0:h}/..)
 
-env=$repo/env
-
-global_node_packages=(
-    meteorite
-)
+venv=$repo/local/venv
 
 pacman_packages=(
     git
-    nodejs
     python2-virtualenv
     zsh
 )
@@ -33,53 +28,31 @@ function install_pacman_packages()
     sudo pacman --noconfirm --sync --needed --refresh $pacman_packages
 }
 
-function install_meteor()
+function create_virtualenv()
 {
-   curl https://install.meteor.com/ | sh
-}
-
-function install_global_node_packages()
-{
-    sudo --set-home npm install --global $global_node_packages
-}
-
-function install_meteorite_packages()
-{(
-    cd $repo/dino
-    mrt install
-)}
-
-function create_ve()
-{
-    virtualenv-2.7 $env
+    mkdir --parents $venv:h
+    virtualenv --python=python2.7 $venv
 }
 
 function install_python_packages()
-{(
-    unsetopt no_unset
-    source $env/bin/activate
-    set no_unset
+{
+    unsetopt NO_UNSET
+    source $venv/bin/activate
+    setopt NO_UNSET
 
-    pip install git+https://github.com/foxdog-studios/pyddp.git
-    pip install --requirement $repo/requirement.txt
-)}
+    pip install --requirement $repo/requirements.txt
+}
 
 function init_local()
 {
     local config_dir=$repo/local/config
     local dev_dir=$config_dir/development
-    local template_dir=$repo/templates
 
     mkdir --parents $dev_dir
 
-    local tts_name=tts.yaml
-    if [[ ! -e $dev_dir/$tts_name ]]; then
-        cp $template_dir/$tts_name $dev_dir
-    fi
-
-    local dino_name=dino.json
-    if [[ ! -e $dev_dir/$dino_name ]]; then
-        cp $template_dir/$dino_name $dev_dir
+    local config_name=tts.yaml
+    if [[ ! -e $dev_dir/$config_name ]]; then
+        cp $repo/templates/$config_name $dev_dir
     fi
 
     local target=$config_dir/default
@@ -95,11 +68,8 @@ function init_local()
 
 tasks=(
     install_pacman_packages
-    create_ve
+    create_virtualenv
     install_python_packages
-    install_meteor
-    install_global_node_packages
-    install_meteorite_packages
     init_local
 )
 
@@ -110,16 +80,13 @@ function usage()
 
 		Usage:
 
-		    setup.sh [TASK...]
+		    setup.zsh [TASK...]
 
 		Tasks:
 
 		    install_pacman_packages
-		    create_ve
+		    create_virtualenv
 		    install_python_packages
-		    install_meteor
-		    install_global_node_packages
-		    install_meteorite_packages
 		    init_local
 	EOF
     exit 1
@@ -132,7 +99,7 @@ for task in $@; do
 done
 
 for task in ${@:-$tasks}; do
-    echo -e "\e[32mTask: $task\e[0m\n"
+    print -P -- "%F{green}Task: $task%f"
     $task
 done
 
