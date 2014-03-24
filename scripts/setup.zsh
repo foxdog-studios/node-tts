@@ -8,13 +8,21 @@ setopt NO_UNSET
 # = Configuration                                                              =
 # ==============================================================================
 
+# Paths
+
 repo=$(realpath -- ${0:h}/..)
 
-venv=$repo/local/venv
+
+# Packages
+
+global_node_packages=(
+    node-gyp
+)
 
 pacman_packages=(
     git
-    python2-virtualenv
+    python2
+    yaourt
     zsh
 )
 
@@ -28,37 +36,24 @@ function install_pacman_packages()
     sudo pacman --noconfirm --sync --needed --refresh $pacman_packages
 }
 
-function create_virtualenv()
+function install_swift()
 {
-    mkdir --parents $venv:h
-    virtualenv --python=python2.7 $venv
-}
-
-function install_python_packages()
-{
-    unsetopt NO_UNSET
-    source $venv/bin/activate
-    setopt NO_UNSET
-
-    pip install --requirement $repo/requirements.txt
-}
-
-function init_local()
-{
-    local config_dir=$repo/local/config
-    local dev_dir=$config_dir/development
-
-    mkdir --parents $dev_dir
-
-    local config_name=tts.yaml
-    if [[ ! -e $dev_dir/$config_name ]]; then
-        cp $repo/templates/$config_name $dev_dir
+    if pacman -Q swift &> /dev/null; then
+        return
     fi
 
-    local target=$config_dir/default
-    if [[ ! -e $target ]]; then
-        ln --force --symbolic $dev_dir:t $target
+    if [[ ! -d /tmp/swift ]]; then
+        git clone gitolite@foxdogstudios.com:swift /tmp/swift
     fi
+
+    cd /tmp/swift
+    make rebuild
+    sudo pacman --noconfirm --upgrade *pkg.tar.xz
+}
+
+function install_global_node_packages()
+{
+    sudo --set-home npm install --global $global_node_packages
 }
 
 
@@ -68,9 +63,8 @@ function init_local()
 
 tasks=(
     install_pacman_packages
-    create_virtualenv
-    install_python_packages
-    init_local
+    install_swift
+    install_global_node_packages
 )
 
 function usage()
@@ -85,9 +79,8 @@ function usage()
 		Tasks:
 
 		    install_pacman_packages
-		    create_virtualenv
-		    install_python_packages
-		    init_local
+		    install_swift
+		    install_global_node_packages
 	EOF
     exit 1
 }
