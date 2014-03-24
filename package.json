@@ -6,10 +6,11 @@
   "author": "Peter Sutton",
   "main": "./build/Release/tts",
   "scripts": {
-    "install": "node-gyp rebuild"
+    "install": "node-gyp --python=python2 rebuild"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/foxdog-studios/node-tts.git"
-  }
+  },
+  "private": true
 }
