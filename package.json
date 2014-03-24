@@ -1,6 +1,6 @@
 {
   "name": "tts",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Node.js Swift Text-to-speech add-on",
   "keywords": [ "PCM", "Swift", "TTS", "waveform" ],
   "author": "Peter Sutton",

@@ -1,0 +1,1 @@
+cmd_Release/obj.target/tts.node := flock ./Release/linker.lock g++ -shared -pthread -rdynamic -m64  -Wl,-soname=tts.node -o Release/obj.target/tts.node -Wl,--start-group Release/obj.target/tts/src/tts.o Release/obj.target/tts/src/tts_wrap.o -Wl,--end-group -lceplang_en -lceplex_us -lswift
