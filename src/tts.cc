@@ -67,7 +67,7 @@ bool Tts::TryClosePort() {
   return closed;
 }
 
-bool IsSuccess(const swift_result_t& result) {
+bool Tts::IsSuccess(const swift_result_t& result) {
   return result == SWIFT_SUCCESS;
 }
 
