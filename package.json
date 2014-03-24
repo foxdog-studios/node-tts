@@ -1,22 +1,12 @@
 {
   "name": "tts",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Node.js Swift Text-to-speech add-on",
-  "main": "build/Release/tts.node",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "node-gyp rebuild"
-  },
+  "keywords": [ "PCM", "Swift", "TTS", "waveform" ],
+  "author": "Peter Sutton",
+  "main": "./build/Release/tts",
   "repository": {
     "type": "git",
     "url": "https://github.com/foxdog-studios/node-tts.git"
-  },
-  "keywords": [
-    "PCM",
-    "Swift",
-    "TTS",
-    "waveform"
-  ],
-  "author": "Peter Sutton",
-  "gypfile": true
+  }
 }
