@@ -1,15 +1,15 @@
 {
   "name": "tts",
   "version": "0.0.0",
-  "description": "Text-to-speech addon",
-  "main": "tts",
+  "description": "Node.js Swift Text-to-speech add-on",
+  "main": "build/Release/tts.node",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "install": "node-gyp rebuild"
   },
   "repository": {
     "type": "git",
-    "url": "gitolite@foxdogstudios.com:tts"
+    "url": "https://github.com/foxdog-studios/node-tts.git"
   },
   "keywords": [
     "PCM",
@@ -18,6 +18,5 @@
     "waveform"
   ],
   "author": "Peter Sutton",
-  "gypfile": true,
-  "private": true
+  "gypfile": true
 }
