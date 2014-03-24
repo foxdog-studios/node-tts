@@ -1,0 +1,23 @@
+{
+  "name": "tts",
+  "version": "0.0.0",
+  "description": "Text-to-speech addon",
+  "main": "tts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node-gyp rebuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "gitolite@foxdogstudios.com:tts"
+  },
+  "keywords": [
+    "PCM",
+    "Swift",
+    "TTS",
+    "waveform"
+  ],
+  "author": "Peter Sutton",
+  "gypfile": true,
+  "private": true
+}
