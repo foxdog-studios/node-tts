@@ -5,6 +5,9 @@
   "keywords": [ "PCM", "Swift", "TTS", "waveform" ],
   "author": "Peter Sutton",
   "main": "./build/Release/tts",
+  "scripts": {
+    "install": "node-gyp rebuild"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/foxdog-studios/node-tts.git"
