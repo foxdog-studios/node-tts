@@ -18,6 +18,7 @@ class Tts {
   bool TryClose();
 
   std::vector<char> CreateWaveform(const std::string& text);
+  bool TryLoadLexicon(const std::string& file);
 
  private:
   swift_engine* engine_;
@@ -29,6 +30,8 @@ class Tts {
 
   bool TryOpenPort();
   bool TryClosePort();
+
+  bool TrySetVoice();
 
   static bool IsSuccess(const swift_result_t& result);
 };

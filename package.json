@@ -1,12 +1,13 @@
 {
   "name": "tts",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Node.js Swift Text-to-speech add-on",
   "keywords": [ "PCM", "Swift", "TTS", "waveform" ],
   "author": "Peter Sutton",
   "main": "./build/Release/tts",
   "scripts": {
-    "install": "node-gyp --python=python2 rebuild"
+    "install": "node-gyp --python=python2 rebuild",
+    "test": "node scripts/test.js"
   },
   "repository": {
     "type": "git",

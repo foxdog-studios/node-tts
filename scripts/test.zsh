@@ -1,11 +1,11 @@
 #!/usr/bin/env zsh
 
-cd -- ${0:h}/..
-exec aoss coffee <<-'EOF'
-	fs = require 'fs'
-	tts = require './build/Release/tts'
-	t = new tts.Tts()
-	w = t.createWaveform 'Hello, World!'
-	fs.writeFileSync '/tmp/tts.pcm', w
-EOF
+setopt ERR_EXIT
+setopt NO_UNSET
+
+cd -- $0:h:h
+npm install
+npm test
+exec aplay --channels=1 --format=S16_LE --rate=16000  /tmp/tts.pcm
+rm /tmp/tts.pcm
 

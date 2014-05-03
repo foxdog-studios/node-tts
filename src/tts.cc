@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstdlib>
 #include <vector>
 
 #include <swift.h>
@@ -7,18 +8,18 @@
 
 namespace tts {
 
-Tts::Tts() : engine_(0), port_(0) {
+Tts::Tts() : engine_(NULL), port_(NULL) {
 }
 
 Tts::~Tts() {
 }
 
 bool Tts::IsOpen() {
-  return engine_ != 0 && port_ != 0;
+  return engine_ != NULL && port_ != NULL;
 }
 
 bool Tts::TryOpen() {
-  return TryOpenEngine() && TryOpenPort();
+  return TryOpenEngine() && TryOpenPort() && TrySetVoice();
 }
 
 bool Tts::TryClose() {
@@ -28,27 +29,36 @@ bool Tts::TryClose() {
 std::vector<char> Tts::CreateWaveform(const std::string& text) {
   assert(IsOpen());
   waveform_.clear();
-  swift_port_speak_text(port_, text.c_str(), 0, 0, 0, 0);
+  swift_port_speak_text(port_, text.c_str(), 0, NULL, NULL, NULL);
   return std::vector<char>(waveform_);
 }
 
+bool Tts::TryLoadLexicon(const std::string& file) {
+  assert(IsOpen());
+  swift_voice* const voice = swift_port_get_current_voice(port_);
+  if (voice == NULL) {
+    return false;
+  }
+  return IsSuccess(swift_voice_load_lexicon(voice, file.c_str()));
+}
+
 bool Tts::TryOpenEngine() {
-  engine_ = swift_engine_open(0);
-  return engine_ != 0;
+  engine_ = swift_engine_open(NULL);
+  return engine_ != NULL;
 }
 
 bool Tts::TryCloseEngine() {
   const bool closed = IsSuccess(swift_engine_close(engine_));
   if (closed) {
-    engine_ = 0;
+    engine_ = NULL;
   }
   return closed;
 }
 
 bool Tts::TryOpenPort() {
   assert(!IsOpen());
-  port_ = swift_port_open(engine_, 0);
-  bool opened = port_ != 0;
+  port_ = swift_port_open(engine_, NULL);
+  bool opened = port_ != NULL;
   if (opened) {
     swift_port_set_callback(
         port_,
@@ -62,9 +72,13 @@ bool Tts::TryOpenPort() {
 bool Tts::TryClosePort() {
   const bool closed = IsSuccess(swift_port_close(port_));
   if (closed) {
-    port_ = 0;
+    port_ = NULL;
   }
   return closed;
+}
+
+bool Tts::TrySetVoice() {
+  return swift_port_set_voice_by_name(port_, "Amy") != NULL;
 }
 
 bool Tts::IsSuccess(const swift_result_t& result) {

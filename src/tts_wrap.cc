@@ -30,6 +30,9 @@ void TtsWrap::Init(Handle<Object> exports) {
   tpl->PrototypeTemplate()->Set(
       String::NewSymbol("createWaveform"),
       FunctionTemplate::New(CreateWaveform)->GetFunction());
+  tpl->PrototypeTemplate()->Set(
+      String::NewSymbol("tryLoadLexicon"),
+      FunctionTemplate::New(TryLoadLexicon)->GetFunction());
   constructor = Persistent<Function>::New(tpl->GetFunction());
   exports->Set(String::NewSymbol("Tts"), constructor);
 }
@@ -69,6 +72,17 @@ Handle<Value> TtsWrap::New(const Arguments& args) {
     Local<Value> argv[argc] = { };
     return scope.Close(constructor->NewInstance(argc, argv));
   }
+}
+
+Handle<Value> TtsWrap::TryLoadLexicon(const v8::Arguments& args) {
+  HandleScope scope;
+
+  TtsWrap* const tts_wrap = ObjectWrap::Unwrap<TtsWrap>(args.This());
+  String::Utf8Value utf8_file(args[0]->ToString());
+  std::string const file(static_cast<char*>(*utf8_file));
+  bool const success = tts_wrap->tts_.TryLoadLexicon(file);
+
+  return scope.Close(v8::Boolean::New(success));
 }
 
 } // namespace
