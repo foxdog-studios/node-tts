@@ -1,7 +1,7 @@
 {
-  "name": "tts",
+  "name": "tts-swift",
   "version": "0.1.0",
-  "description": "Node.js Swift Text-to-speech add-on",
+  "description": "[DON'T USE] Node.js Swift Text-to-speech add-on",
   "keywords": [ "PCM", "Swift", "TTS", "waveform" ],
   "author": "Peter Sutton",
   "main": "./build/Release/tts",
@@ -12,6 +12,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/foxdog-studios/node-tts.git"
-  },
-  "private": true
+  }
 }
